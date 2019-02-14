@@ -9,6 +9,7 @@ var program;
 var vertices = [];
 var colors = [];
 
+
 window.onload = function init(){
     canvas = document.getElementById( "gl-canvas" );
     
@@ -31,7 +32,6 @@ window.onload = function init(){
 		vec2(1, 1),
         vec2(2, .5),
         vec2(0,0),
-        
     ];
     
     colors = [
@@ -80,6 +80,7 @@ window.onload = function init(){
         0          // Specifies a pointer to the first component 
             // of the first generic vertex attribute in the array.
                           );
+
 	gl.enableVertexAttribArray( vPosition ); 
 						  
     var cBuffer = gl.createBuffer();
@@ -96,10 +97,32 @@ window.onload = function init(){
 	//scaleLoc = gl.getUniformLocation(program, "scale");
 	xCoord = gl.getUniformLocation(program, "xCoord");
 	yCoord = gl.getUniformLocation(program, "yCoord");
-	
-	
-    render();
+  
+	makeVertices();
+    
+   render();
 };
+
+function makeVertices()
+{
+	const NUM = 300;
+	//r=sin^2(2.4theta)+cos^4(2.4theta)
+	var i, fact, fact_now;
+	
+	fact = (2 * Math.PI) / NUM;
+	for(i = 0; i < NUM; i++){
+		fact_now = fact * i;
+		vertices.push(vec2((Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4),
+						   (Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4)));
+	}
+}
+
+function helpTool(){
+	for(var i = 0; i < vertices.length; i++)
+	{
+		console.log(vertices[i]);
+	}
+}
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
@@ -150,5 +173,4 @@ function render() {
 	gl.drawArrays(gl.LINES, 0, 6);
 	
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
-	
 }
