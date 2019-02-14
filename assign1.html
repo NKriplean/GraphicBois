@@ -1,37 +1,53 @@
 <html>
 	<head>
-		<title>Assign 1</title>
+		<Title>Assign 1</Title>
 	</head>
 	
 	<script id="vertex-shader" type="x-shader/x-vertex">
+		// GLSLvertexshadercode
 		attribute vec4 vPosition;
-		uniform float xcoord;
-		uniform float ycoord;
-		void main()
-		{
-			gl_Position = vec4(vPosition.x * xcoord, vPosition.y * ycoord, 0,1);
+		//////// following two gotten from colored, turning pentagon example
+		attribute vec4 vColor;
+		varying vec4 fColor;
+		
+		uniform float xCoord;
+		uniform float yCoord;
+	
+		void main () {
+		
+			fColor = vColor;
+			gl_Position = vec4(vPosition.x * xCoord, vPosition.y * yCoord, 0, 1);
 		}
 	</script>
+
 	
 	<script id="fragment-shader" type="x-shader/x-fragment">
+		//GLSL fragment shader code
 		precision mediump float;
+		// gotten from rotating colored pentagon
+		varying vec4 fColor;
+		uniform int smooth_flag;
 		
-		void main()
-		{
+		void main() {
+			if (smooth_flag == 1) {
+				gl_FragColor = fColor;
+			}
+			else {
 			gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+			}
 		}
 	</script>
 	
+	<!--Include A/S WebGL support libraries-->
 	<script type="text/javascript" src="../Common/webgl-utils.js"></script>
-	<script type="text/javascript" src="../Common/initShaders.js"></script> 
-	<script type="text/javascript" src="../Common/MV.js"></script> 
+	<script type="text/javascript" src="../Common/initShaders.js"></script>
+	<script type="text/javascript" src="../Common/MV.js"></script>
 	<script type="text/javascript" src="../Common/webgl-debug.js"></script>
 	<script type="text/javascript" src="assign1.js"></script>
 	
 	<body>
 		<canvas id="gl-canvas" width="512" height="512">
-			Oops ... your browser doesn't support the HTML5 canvas element
+			Oops ... your browser does not support the HTML5 canvas element
 		</canvas>
 	</body>
-	
 </html>

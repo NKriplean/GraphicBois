@@ -1,9 +1,14 @@
 var gl;
 var points;
+///////////////////////////////////////////////
+//var scaleLoc;
 var canvas;
-var xcoord;
-var ycoord;
-var vertices;
+var xCoord;
+var yCoord;
+var program;
+var vertices = [];
+var colors = [];
+
 
 window.onload = function init(){
     canvas = document.getElementById( "gl-canvas" );
@@ -13,16 +18,34 @@ window.onload = function init(){
     if ( !gl ) { alert( "WebGL isn't available" );
                }
 
+    // Four 2D Vertices using Angel/Shreiner utility class vac2
     vertices = [           
-		vec2(-1,-1),
-		vec2(1,1),
-		vec2(-1,1),
-		vec2(1,1),
-		vec2(1,-1),
-		vec2(1,1)
+        
+		
+		vec2(-1, -1),
+		vec2(1, 1),
+		vec2(-1, 1),
+		vec2(1, 1),
+		vec2(1, -1),
+		vec2(1, 1),
+		
+		vec2(1, 1),
+        vec2(2, .5),
+        vec2(0,0),
     ];
     
-    
+    colors = [
+		vec4(1, 0, 0, 1),
+		vec4(1, 0, 0, 1),
+		vec4(1, 0, 0, 1),
+		//vec4(0, 10, 0, 1),
+		//vec4(0, 10, 0, 1),
+		//vec4(vertices[3][0] + 0.5, 0.0, vertices[3][1] + 0.5, 1.0),
+		//vec4(vertices[4][0] + 0.5, 0.0, vertices[4][1] + 0.5, 1.0),
+		//vec4(vertices[5][0] + 0.5, 0.0, vertices[5][1] + 0.5, 1.0)
+	]
+	
+	
     //  Configure WebGL
     
     gl.viewport( 0, 0, canvas.width, canvas.height );
@@ -30,7 +53,7 @@ window.onload = function init(){
 
     //  Load shaders and initialize attribute buffers using A/S utility initShaders
 
-    var program = initShaders( gl, "vertex-shader", "fragment-shader" ); 
+    program = initShaders( gl, "vertex-shader", "fragment-shader" ); 
     gl.useProgram( program );
 
     // Load the data into the GPU using A/S flatten function
@@ -57,16 +80,27 @@ window.onload = function init(){
         0          // Specifies a pointer to the first component 
             // of the first generic vertex attribute in the array.
                           );
-    gl.enableVertexAttribArray( vPosition );    
+
+	gl.enableVertexAttribArray( vPosition ); 
+						  
+    var cBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
 	
-	xcoord = gl.getUniformLocation(program, "xcoord");
-	ycoord = gl.getUniformLocation(program, "ycoord");
+	var vColor = gl.getAttribLocation(program, "vColor");
+	gl.vertexAttribPointer(vColor, 1, gl.FLOAT, false, 0, 0);
+	gl.enableVertexAttribArray(vColor);
 	
+	
+	   
+    /////////////////////////////////////////////////
+	//scaleLoc = gl.getUniformLocation(program, "scale");
+	xCoord = gl.getUniformLocation(program, "xCoord");
+	yCoord = gl.getUniformLocation(program, "yCoord");
+  
 	makeVertices();
-	
-	helpTool();
     
-    render();
+   render();
 };
 
 function makeVertices()
@@ -92,29 +126,51 @@ function helpTool(){
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
+    ////////////////////////////////////////////////////////
+	gl.uniform1f(xCoord, 1);
+	gl.uniform1f(yCoord, 1);
+		gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
+
 	
-	gl.uniform1f(xcoord,1);
-	gl.uniform1f(ycoord,1);
+	gl.viewport(0, 0, canvas.width/2, canvas.height/2);//////////////////
+	//gl.clear( gl.COLOR_BUFFER_BIT );
+	//gl.drawArrays( gl.TRIANGLE_FAN, 0, 4 ); //////////////change to 4
 	
-	gl.viewport( 0, 0, canvas.width/2, canvas.height/2);
-	gl.drawArrays( gl.LINES, 0, 6 );
-	gl.drawArrays(gl.LINE_LOOP, 6, vertices.length-6);
+	gl.drawArrays(gl.LINES, 0, 6);
+	//gl.viewport(canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
+	//gl.drawArrays( gl.TRIANGLE_FAN, 0, 3 );
 	
-	gl.uniform1f(xcoord,1);
-	gl.uniform1f(ycoord,-1);
 	
-	gl.viewport( 0, canvas.height/2, canvas.width/2, canvas.height/2);
-	gl.drawArrays( gl.LINES, 0, 6 );
+	gl.drawArrays(gl.TRIANGLES, 6, 3);
 	
-	gl.uniform1f(xcoord,-1);
-	gl.uniform1f(ycoord,-1);
+	//gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 0);
+	//gl.drawArrays(gl.LINE_LOOP, 6, 3);
+	////////////////////////////////////////////////////////////////
+	gl.uniform1f(xCoord, 1);
+	gl.uniform1f(yCoord, -1);
 	
-	gl.viewport( canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
-	gl.drawArrays( gl.LINES, 0, 6 );
+	gl.viewport(0, canvas.height/2, canvas.width/2, canvas.height/2);
+	gl.drawArrays(gl.LINES, 0, 6);
 	
-	gl.uniform1f(xcoord,-1);
-	gl.uniform1f(ycoord,1);
 	
-	gl.viewport( canvas.width/2, 0, canvas.width/2, canvas.height/2);
-	gl.drawArrays( gl.LINES, 0, 6 );
+	gl.drawArrays(gl.TRIANGLES, 6, 3);
+	
+	///////////////////////////////////////////////////////////////
+	gl.uniform1f(xCoord, -1);
+	gl.uniform1f(yCoord, -1);
+	
+	gl.viewport(canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
+	gl.drawArrays(gl.LINES, 0, 6);
+	
+	gl.drawArrays(gl.TRIANGLES, 6, 3);
+	
+	////////////////////////////////////////////////////////////////////
+	gl.uniform1f(xCoord, -1);
+	gl.uniform1f(yCoord, 1);
+	
+	
+	gl.viewport(canvas.width/2, 0, canvas.width/2, canvas.height/2);
+	gl.drawArrays(gl.LINES, 0, 6);
+	
+	gl.drawArrays(gl.TRIANGLES, 6, 3);
 }
