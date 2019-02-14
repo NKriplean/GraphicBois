@@ -1,29 +1,25 @@
 var gl;
 var points;
+var canvas;
+var xcoord;
+var ycoord;
+var vertices;
 
 window.onload = function init(){
-    var canvas = document.getElementById( "gl-canvas" );
+    canvas = document.getElementById( "gl-canvas" );
     
     //    gl = WebGLUtils.setupWebGL( canvas );  // More efficient
     gl = WebGLDebugUtils.makeDebugContext( canvas.getContext("webgl") ); // For debugging
     if ( !gl ) { alert( "WebGL isn't available" );
                }
 
-    var vertices = [           
+    vertices = [           
 		vec2(-1,-1),
 		vec2(1,1),
 		vec2(-1,1),
+		vec2(1,1),
 		vec2(1,-1),
-		vec2(0,1),
-		vec2(0,-1),
-		vec2(-1,0),
-		vec2(1,0),
-		
-		vec2(-1,-1),
-		vec2(-1,1),
-		vec2(1,1),
-		vec2(1,-1)
-		
+		vec2(1,1)
     ];
     
     
@@ -62,13 +58,63 @@ window.onload = function init(){
             // of the first generic vertex attribute in the array.
                           );
     gl.enableVertexAttribArray( vPosition );    
+	
+	xcoord = gl.getUniformLocation(program, "xcoord");
+	ycoord = gl.getUniformLocation(program, "ycoord");
+	
+	makeVertices();
+	
+	helpTool();
     
     render();
 };
 
+function makeVertices()
+{
+	const NUM = 300;
+	//r=sin^2(2.4theta)+cos^4(2.4theta)
+	var i, fact, fact_now;
+	
+	fact = (2 * Math.PI) / NUM;
+	for(i = 0; i < NUM; i++){
+		fact_now = fact * i;
+		vertices.push(vec2((Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4),
+						   (Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4)));
+	}
+}
+
+function helpTool(){
+	for(var i = 0; i < vertices.length; i++)
+	{
+		console.log(vertices[i]);
+	}
+}
+
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
-    gl.drawArrays( gl.LINES, 0, 8 );
-	gl.viewport(0,0, canvas.width/2, canvas.height/2);
-	gl.drawArrays( gl.TRIANGLE_FAN, 8, 4 );
+	
+	gl.uniform1f(xcoord,1);
+	gl.uniform1f(ycoord,1);
+	
+	gl.viewport( 0, 0, canvas.width/2, canvas.height/2);
+	gl.drawArrays( gl.LINES, 0, 6 );
+	gl.drawArrays(gl.LINE_LOOP, 6, vertices.length-6);
+	
+	gl.uniform1f(xcoord,1);
+	gl.uniform1f(ycoord,-1);
+	
+	gl.viewport( 0, canvas.height/2, canvas.width/2, canvas.height/2);
+	gl.drawArrays( gl.LINES, 0, 6 );
+	
+	gl.uniform1f(xcoord,-1);
+	gl.uniform1f(ycoord,-1);
+	
+	gl.viewport( canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
+	gl.drawArrays( gl.LINES, 0, 6 );
+	
+	gl.uniform1f(xcoord,-1);
+	gl.uniform1f(ycoord,1);
+	
+	gl.viewport( canvas.width/2, 0, canvas.width/2, canvas.height/2);
+	gl.drawArrays( gl.LINES, 0, 6 );
 }

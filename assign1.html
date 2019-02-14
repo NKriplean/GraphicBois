@@ -5,10 +5,11 @@
 	
 	<script id="vertex-shader" type="x-shader/x-vertex">
 		attribute vec4 vPosition;
-		
+		uniform float xcoord;
+		uniform float ycoord;
 		void main()
 		{
-			gl_Position = vPosition;
+			gl_Position = vec4(vPosition.x * xcoord, vPosition.y * ycoord, 0,1);
 		}
 	</script>
 	
