@@ -38,11 +38,14 @@ window.onload = function init(){
 		vec4(1, 0, 0, 1),
 		vec4(1, 0, 0, 1),
 		vec4(1, 0, 0, 1),
-		//vec4(0, 10, 0, 1),
-		//vec4(0, 10, 0, 1),
-		//vec4(vertices[3][0] + 0.5, 0.0, vertices[3][1] + 0.5, 1.0),
-		//vec4(vertices[4][0] + 0.5, 0.0, vertices[4][1] + 0.5, 1.0),
-		//vec4(vertices[5][0] + 0.5, 0.0, vertices[5][1] + 0.5, 1.0)
+		vec4(1, 0, 0, 1),
+		vec4(1, 0, 0, 1),
+		vec4(1, 0, 0, 1),
+		//
+		vec4(1, 1, 0, 1),
+		vec4(1, 1, 0, 1),
+		vec4(1, 1, 0, 1)
+		//
 	]
 	
 	
@@ -88,7 +91,7 @@ window.onload = function init(){
 	gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
 	
 	var vColor = gl.getAttribLocation(program, "vColor");
-	gl.vertexAttribPointer(vColor, 1, gl.FLOAT, false, 0, 0);
+	gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 	gl.enableVertexAttribArray(vColor);
 	
 	
@@ -107,13 +110,32 @@ function makeVertices()
 {
 	const NUM = 300;
 	//r=sin^2(2.4theta)+cos^4(2.4theta)
-	var i, fact, fact_now;
 	
-	fact = (2 * Math.PI) / NUM;
-	for(i = 0; i < NUM; i++){
-		fact_now = fact * i;
-		vertices.push(vec2((Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4),
-						   (Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4)));
+	var radius = 1.0;
+    for (var i = 0; i < NUM; i++)
+    {
+
+        vertices.push(radius * Math.cos((i / NUM) * 2.0 * Math.PI));
+
+        vertices.push(radius * Math.sin((i / NUM) * 2.0 * Math.PI));
+
+    }
+    vertices.push(vertices[0]);
+    vertices.push(vertices[1]);
+	
+	
+	//var i, fact, fact_now;
+	
+	//fact = (2 * Math.PI) / NUM;
+	//for(i = 0; i < NUM; i++){
+	//	fact_now = fact * i;
+	//	vertices.push(vec2((Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4),
+	//					   (Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4)));
+	//}
+	
+	for(var i = 0; i < NUM; i++)
+	{
+		colors.push(vec4(0, 0, 1, 1));
 	}
 }
 
@@ -126,33 +148,21 @@ function helpTool(){
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
-    ////////////////////////////////////////////////////////
+	
 	gl.uniform1f(xCoord, 1);
 	gl.uniform1f(yCoord, 1);
-		gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
+	gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
 
-	
-	gl.viewport(0, 0, canvas.width/2, canvas.height/2);//////////////////
-	//gl.clear( gl.COLOR_BUFFER_BIT );
-	//gl.drawArrays( gl.TRIANGLE_FAN, 0, 4 ); //////////////change to 4
-	
+	gl.viewport(0, 0, canvas.width/2, canvas.height/2);
 	gl.drawArrays(gl.LINES, 0, 6);
-	//gl.viewport(canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
-	//gl.drawArrays( gl.TRIANGLE_FAN, 0, 3 );
-	
-	
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
 	
-	//gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 0);
-	//gl.drawArrays(gl.LINE_LOOP, 6, 3);
 	////////////////////////////////////////////////////////////////
 	gl.uniform1f(xCoord, 1);
 	gl.uniform1f(yCoord, -1);
 	
 	gl.viewport(0, canvas.height/2, canvas.width/2, canvas.height/2);
 	gl.drawArrays(gl.LINES, 0, 6);
-	
-	
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
 	
 	///////////////////////////////////////////////////////////////
@@ -161,16 +171,13 @@ function render() {
 	
 	gl.viewport(canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
 	gl.drawArrays(gl.LINES, 0, 6);
-	
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
 	
 	////////////////////////////////////////////////////////////////////
 	gl.uniform1f(xCoord, -1);
 	gl.uniform1f(yCoord, 1);
 	
-	
 	gl.viewport(canvas.width/2, 0, canvas.width/2, canvas.height/2);
 	gl.drawArrays(gl.LINES, 0, 6);
-	
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
 }
