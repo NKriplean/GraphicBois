@@ -8,6 +8,7 @@ var yCoord;
 var program;
 var vertices = [];
 var colors = [];
+const NUM = 1000;
 
 
 window.onload = function init(){
@@ -32,6 +33,11 @@ window.onload = function init(){
 		vec2(1, 1),
         vec2(2, .5),
         vec2(0,0),
+		
+		vec2(-.75,-.75),
+		vec2(-.75,-.5),
+		vec2(-.5,-.5),
+		vec2(-.5,-.75)
     ];
     
     colors = [
@@ -44,8 +50,12 @@ window.onload = function init(){
 		//
 		vec4(1, 1, 0, 1),
 		vec4(1, 1, 0, 1),
-		vec4(1, 1, 0, 1)
+		vec4(1, 1, 0, 1),
 		//
+		vec4(0,1,0,1),
+		vec4(0,1,0,1),
+		vec4(0,1,0,1),
+		vec4(0,1,0,1)
 	]
 	
 	
@@ -60,6 +70,8 @@ window.onload = function init(){
     gl.useProgram( program );
 
     // Load the data into the GPU using A/S flatten function
+	
+	makeVertices();
 
     var bufferId = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
@@ -97,52 +109,33 @@ window.onload = function init(){
 	
 	   
     /////////////////////////////////////////////////
-	//scaleLoc = gl.getUniformLocation(program, "scale");
 	xCoord = gl.getUniformLocation(program, "xCoord");
 	yCoord = gl.getUniformLocation(program, "yCoord");
-  
-	makeVertices();
     
-   render();
+    render();
 };
 
 function makeVertices()
 {
-	const NUM = 300;
+	const SCALE = .75;
 	//r=sin^2(2.4theta)+cos^4(2.4theta)
 	
-	var radius = 1.0;
-    for (var i = 0; i < NUM; i++)
-    {
-
-        vertices.push(radius * Math.cos((i / NUM) * 2.0 * Math.PI));
-
-        vertices.push(radius * Math.sin((i / NUM) * 2.0 * Math.PI));
-
-    }
-    vertices.push(vertices[0]);
-    vertices.push(vertices[1]);
+	var i, fact, sinBoi, cosBoi, radius, theta, x, y;
 	
-	
-	//var i, fact, fact_now;
-	
-	//fact = (2 * Math.PI) / NUM;
-	//for(i = 0; i < NUM; i++){
-	//	fact_now = fact * i;
-	//	vertices.push(vec2((Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4),
-	//					   (Math.pow(Math.sin(2.4*fact_now)), 2) + (Math.pow(Math.cos(2.4*fact_now)),4)));
-	//}
+	fact = (10 * Math.PI) / NUM;
+	for(i = 0; i < NUM; ++i){
+		theta = fact * i;
+		sinBoi = Math.sin(2.4*theta)*Math.sin(2.4*theta);
+		cosBoi = Math.cos(2.4*theta)*Math.cos(2.4*theta)*Math.cos(2.4*theta)*Math.cos(2.4*theta);
+		radius = sinBoi + cosBoi;
+		x =  SCALE * Math.cos(theta) * radius;
+		y =  SCALE * Math.sin(theta) * radius;
+		vertices.push(vec2(x,y));
+	}
 	
 	for(var i = 0; i < NUM; i++)
 	{
 		colors.push(vec4(0, 0, 1, 1));
-	}
-}
-
-function helpTool(){
-	for(var i = 0; i < vertices.length; i++)
-	{
-		console.log(vertices[i]);
 	}
 }
 
@@ -156,6 +149,8 @@ function render() {
 	gl.viewport(0, 0, canvas.width/2, canvas.height/2);
 	gl.drawArrays(gl.LINES, 0, 6);
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
+	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
+	gl.drawArrays(gl.LINE_LOOP, vertices.length-NUM, NUM);
 	
 	////////////////////////////////////////////////////////////////
 	gl.uniform1f(xCoord, 1);
@@ -164,6 +159,8 @@ function render() {
 	gl.viewport(0, canvas.height/2, canvas.width/2, canvas.height/2);
 	gl.drawArrays(gl.LINES, 0, 6);
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
+	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
+	gl.drawArrays(gl.LINE_LOOP, vertices.length-NUM, NUM);
 	
 	///////////////////////////////////////////////////////////////
 	gl.uniform1f(xCoord, -1);
@@ -172,6 +169,8 @@ function render() {
 	gl.viewport(canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
 	gl.drawArrays(gl.LINES, 0, 6);
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
+	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
+	gl.drawArrays(gl.LINE_LOOP, vertices.length-NUM, NUM);
 	
 	////////////////////////////////////////////////////////////////////
 	gl.uniform1f(xCoord, -1);
@@ -180,4 +179,6 @@ function render() {
 	gl.viewport(canvas.width/2, 0, canvas.width/2, canvas.height/2);
 	gl.drawArrays(gl.LINES, 0, 6);
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
+	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
+	gl.drawArrays(gl.LINE_LOOP, vertices.length-NUM, NUM);
 }
