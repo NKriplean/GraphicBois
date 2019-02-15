@@ -8,7 +8,7 @@ var yCoord;
 var program;
 var vertices = [];
 var colors = [];
-const NUM = 1000;
+var num = 1000;
 
 
 window.onload = function init(){
@@ -38,6 +38,7 @@ window.onload = function init(){
 		vec2(-.75,-.5),
 		vec2(-.5,-.5),
 		vec2(-.5,-.75)
+		
     ];
     
     colors = [
@@ -71,6 +72,7 @@ window.onload = function init(){
 
     // Load the data into the GPU using A/S flatten function
 	
+	makePent();
 	makeVertices();
 
     var bufferId = gl.createBuffer();
@@ -111,6 +113,10 @@ window.onload = function init(){
     /////////////////////////////////////////////////
 	xCoord = gl.getUniformLocation(program, "xCoord");
 	yCoord = gl.getUniformLocation(program, "yCoord");
+	
+	document.getElementById("vertDown").onclick = function(){num -= 10;};
+    document.getElementById("vertReset").onclick = function(){num = 1000;};
+    
     
     render();
 };
@@ -120,23 +126,41 @@ function makeVertices()
 	const SCALE = .75;
 	//r=sin^2(2.4theta)+cos^4(2.4theta)
 	
-	var i, fact, sinBoi, cosBoi, radius, theta, x, y;
+	var i, fact, sinVar, cosVar, radius, theta, x, y;
 	
-	fact = (10 * Math.PI) / NUM;
-	for(i = 0; i < NUM; ++i){
+	fact = (10 * Math.PI) / num;
+	for(i = 0; i < num; ++i){
 		theta = fact * i;
-		sinBoi = Math.sin(2.4*theta)*Math.sin(2.4*theta);
-		cosBoi = Math.cos(2.4*theta)*Math.cos(2.4*theta)*Math.cos(2.4*theta)*Math.cos(2.4*theta);
-		radius = sinBoi + cosBoi;
+		sinVar = Math.sin(2.4*theta)*Math.sin(2.4*theta);
+		cosVar = Math.cos(2.4*theta)*Math.cos(2.4*theta)*Math.cos(2.4*theta)*Math.cos(2.4*theta);
+		radius = sinVar + cosVar;
 		x =  SCALE * Math.cos(theta) * radius;
 		y =  SCALE * Math.sin(theta) * radius;
 		vertices.push(vec2(x,y));
 	}
 	
-	for(var i = 0; i < NUM; i++)
+	for(var i = 0; i < num; i++)
 	{
 		colors.push(vec4(0, 0, 1, 1));
 	}
+}
+
+function makePent()
+{
+	var sweepAngle = 72.0; // Use radians function from Angel's MV library to convert
+    vertices.push(vec2( 0.5, 0.0));
+    vertices.push(vec2( 0.5 * Math.cos(radians(sweepAngle)), 0.5 * Math.sin(radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(2.0 * radians(sweepAngle)), 0.5 * Math.sin(2.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(3.0 * radians(sweepAngle)), 0.5 * Math.sin(3.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(4.0 * radians(sweepAngle)), 0.5 * Math.sin(4.0 * radians(sweepAngle))));
+	
+	colors.push(vec4(1,0,1,1));
+	colors.push(vec4(1,0,1,1));
+	colors.push(vec4(1,0,1,1));
+	colors.push(vec4(1,0,1,1));
+	colors.push(vec4(1,0,1,1));
+	
+    
 }
 
 function render() {
@@ -150,7 +174,8 @@ function render() {
 	gl.drawArrays(gl.LINES, 0, 6);
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
 	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
-	gl.drawArrays(gl.LINE_LOOP, vertices.length-NUM, NUM);
+	gl.drawArrays(gl.TRIANGLE_FAN, 13, 5);
+	gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
 	
 	////////////////////////////////////////////////////////////////
 	gl.uniform1f(xCoord, 1);
@@ -160,7 +185,8 @@ function render() {
 	gl.drawArrays(gl.LINES, 0, 6);
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
 	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
-	gl.drawArrays(gl.LINE_LOOP, vertices.length-NUM, NUM);
+	gl.drawArrays(gl.TRIANGLE_FAN, 13, 5);
+	gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
 	
 	///////////////////////////////////////////////////////////////
 	gl.uniform1f(xCoord, -1);
@@ -170,7 +196,8 @@ function render() {
 	gl.drawArrays(gl.LINES, 0, 6);
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
 	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
-	gl.drawArrays(gl.LINE_LOOP, vertices.length-NUM, NUM);
+	gl.drawArrays(gl.TRIANGLE_FAN, 13, 5);
+	gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
 	
 	////////////////////////////////////////////////////////////////////
 	gl.uniform1f(xCoord, -1);
@@ -180,5 +207,24 @@ function render() {
 	gl.drawArrays(gl.LINES, 0, 6);
 	gl.drawArrays(gl.TRIANGLES, 6, 3);
 	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
-	gl.drawArrays(gl.LINE_LOOP, vertices.length-NUM, NUM);
+	gl.drawArrays(gl.TRIANGLE_FAN, 13, 5);
+	gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
+	
+	requestAnimFrame( render );
 }
+
+window.onkeydown = function(event) {
+    var key = String.fromCharCode(event.keyCode);
+    // For letters, the upper-case version of the letter is always
+    // returned because the shift-key is regarded as a separate key in
+    // itself.  Hence upper- and lower-case can't be distinguished.
+    switch (key) {
+    case 'D' :
+	num -= 10;
+	break;
+    case 'R' :
+	num = 1000;
+	break;
+    }
+};
+
