@@ -57,7 +57,7 @@ window.onload = function init(){
 		vec4(1, 0, 0, 1),
 		//
 		vec4(1, 1, 0, 1),
-		vec4(1, 1, 0, 1),
+		vec4(1, 0, 1, 1),
 		vec4(1, 1, 0, 1),
 		//
 		vec4(0,1,0,1),
@@ -85,6 +85,7 @@ window.onload = function init(){
     // Load the data into the GPU using A/S flatten function
 	
 	makePent();
+	makeHex();
 	makeVertices();
 
     var bufferId = gl.createBuffer();
@@ -167,10 +168,30 @@ function makePent()
     vertices.push(vec2( 0.5 * Math.cos(4.0 * radians(sweepAngle)), 0.5 * Math.sin(4.0 * radians(sweepAngle))));
 	
 	colors.push(vec4(1,0,1,1));
+	colors.push(vec4(1,1,1,1));
 	colors.push(vec4(1,0,1,1));
+	colors.push(vec4(1,1,1,1));
 	colors.push(vec4(1,0,1,1));
-	colors.push(vec4(1,0,1,1));
-	colors.push(vec4(1,0,1,1));
+	
+    
+}
+
+function makeHex()
+{
+	var sweepAngle = 60.0; // Use radians function from Angel's MV library to convert
+    vertices.push(vec2( 0.25, 0.0));
+    vertices.push(vec2( 0.25 * Math.cos(radians(sweepAngle)), 0.25 * Math.sin(radians(sweepAngle))));
+    vertices.push(vec2( 0.25 * Math.cos(2.0 * radians(sweepAngle)), 0.25 * Math.sin(2.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.25 * Math.cos(3.0 * radians(sweepAngle)), 0.25 * Math.sin(3.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.25 * Math.cos(4.0 * radians(sweepAngle)), 0.25 * Math.sin(4.0 * radians(sweepAngle))));
+	vertices.push(vec2( 0.25 * Math.cos(5.0 * radians(sweepAngle)), 0.25 * Math.sin(5.0 * radians(sweepAngle))));
+	
+	colors.push(vec4(1,1,0,1));
+	colors.push(vec4(0,1,1,1));
+	colors.push(vec4(1,1,0,1));
+	colors.push(vec4(0,1,1,1));
+	colors.push(vec4(1,1,0,1));
+	colors.push(vec4(0,1,1,1));
 	
     
 }
@@ -216,6 +237,7 @@ function render() {
 		gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
 		gl.drawArrays(gl.TRIANGLE_FAN, 13, 4);
 		gl.drawArrays(gl.TRIANGLE_FAN, 17, 5);
+		gl.drawArrays(gl.TRIANGLE_FAN, 22, 6);
 		gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
 	}
 	
