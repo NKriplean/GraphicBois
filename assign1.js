@@ -32,7 +32,7 @@ window.onload = function init(){
 		
 		vec2(1, 1),
         vec2(2, .5),
-        vec2(0,0),
+        vec2(.6,-.3),
 		
 		vec2(-.75,-.75),
 		vec2(-.75,-.5),
@@ -84,8 +84,10 @@ window.onload = function init(){
 
     // Load the data into the GPU using A/S flatten function
 	
-	makePent();
+	makeDodeca();
 	makeHex();
+	makePent();
+	makeRibbon();
 	makeVertices();
 
     var bufferId = gl.createBuffer();
@@ -187,11 +189,11 @@ function makeVertices()
 function makePent()
 {
 	var sweepAngle = 72.0; // Use radians function from Angel's MV library to convert
-    vertices.push(vec2( 0.5, 0.0));
-    vertices.push(vec2( 0.5 * Math.cos(radians(sweepAngle)), 0.5 * Math.sin(radians(sweepAngle))));
-    vertices.push(vec2( 0.5 * Math.cos(2.0 * radians(sweepAngle)), 0.5 * Math.sin(2.0 * radians(sweepAngle))));
-    vertices.push(vec2( 0.5 * Math.cos(3.0 * radians(sweepAngle)), 0.5 * Math.sin(3.0 * radians(sweepAngle))));
-    vertices.push(vec2( 0.5 * Math.cos(4.0 * radians(sweepAngle)), 0.5 * Math.sin(4.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.125, 0.0));
+    vertices.push(vec2( 0.125 * Math.cos(radians(sweepAngle)), 0.125 * Math.sin(radians(sweepAngle))));
+    vertices.push(vec2( 0.125 * Math.cos(2.0 * radians(sweepAngle)), 0.125 * Math.sin(2.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.125 * Math.cos(3.0 * radians(sweepAngle)), 0.125 * Math.sin(3.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.125 * Math.cos(4.0 * radians(sweepAngle)), 0.125 * Math.sin(4.0 * radians(sweepAngle))));
 	
 	colors.push(vec4(1,0,1,1));
 	colors.push(vec4(1,1,1,1));
@@ -220,6 +222,70 @@ function makeHex()
 	colors.push(vec4(0,1,1,1));
 	
     
+}
+
+function makeDodeca()
+{
+	var sweepAngle = 18.0; // Use radians function from Angel's MV library to convert
+    vertices.push(vec2( 0.5, 0.0));
+    vertices.push(vec2( 0.5 * Math.cos(radians(sweepAngle)), 0.5 * Math.sin(radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(2.0 * radians(sweepAngle)), 0.5 * Math.sin(2.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(3.0 * radians(sweepAngle)), 0.5 * Math.sin(3.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(4.0 * radians(sweepAngle)), 0.5 * Math.sin(4.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(5.0 * radians(sweepAngle)), 0.5 * Math.sin(5.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(6.0 * radians(sweepAngle)), 0.5 * Math.sin(6.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(7.0 * radians(sweepAngle)), 0.5 * Math.sin(7.0 * radians(sweepAngle))));
+	vertices.push(vec2( 0.5 * Math.cos(8.0 * radians(sweepAngle)), 0.5 * Math.sin(8.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(9.0 * radians(sweepAngle)), 0.5 * Math.sin(9.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(10.0 * radians(sweepAngle)), 0.5 * Math.sin(10.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(11.0 * radians(sweepAngle)), 0.5 * Math.sin(11.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(12.0 * radians(sweepAngle)), 0.5 * Math.sin(12.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(13.0 * radians(sweepAngle)), 0.5 * Math.sin(13.0 * radians(sweepAngle))));
+	vertices.push(vec2( 0.5 * Math.cos(14.0 * radians(sweepAngle)), 0.5 * Math.sin(14.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(15.0 * radians(sweepAngle)), 0.5 * Math.sin(15.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(16.0 * radians(sweepAngle)), 0.5 * Math.sin(16.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(17.0 * radians(sweepAngle)), 0.5 * Math.sin(17.0 * radians(sweepAngle))));
+	vertices.push(vec2( 0.5 * Math.cos(18.0 * radians(sweepAngle)), 0.5 * Math.sin(18.0 * radians(sweepAngle))));
+    vertices.push(vec2( 0.5 * Math.cos(19.0 * radians(sweepAngle)), 0.5 * Math.sin(19.0 * radians(sweepAngle))));
+	
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	colors.push(vec4(1,0,0,1));
+	colors.push(vec4(0,0,0,1));
+	
+	
+    
+}
+
+function makeRibbon(){
+	vertices.push(vec2(-1.-1));
+	colors.push(vec4(1,0,0,1));
+	var colorChange = 0;
+	for(var i = -.75; i <= 1; i +=.25){
+		vertices.push(vec2(-.75,i));
+		vertices.push(vec2(-1,i));
+		
+		colors.push(vec4(colorChange,0,0,1));
+		colors.push(vec4(0,0,colorChange,1));
+		colorChange+=.125
+		
+	}
 }
 
 function render() {
@@ -258,12 +324,14 @@ function render() {
 				break;
 			}
 		}
-		gl.drawArrays(gl.LINES, 0, 6);
-		gl.drawArrays(gl.TRIANGLES, 6, 3);
-		gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
-		gl.drawArrays(gl.TRIANGLE_FAN, 13, 4);
-		gl.drawArrays(gl.TRIANGLE_FAN, 17, 5);
-		gl.drawArrays(gl.TRIANGLE_FAN, 22, 6);
+		gl.drawArrays(gl.LINES, 0, 6); //Lines
+		gl.drawArrays(gl.TRIANGLES, 6, 3); //Tri
+		gl.drawArrays(gl.TRIANGLE_FAN, 9, 4); //Square1
+		gl.drawArrays(gl.TRIANGLE_FAN, 13, 4); //Square2
+		gl.drawArrays(gl.TRIANGLE_FAN, 17, 20); //Dodeca
+		gl.drawArrays(gl.TRIANGLE_FAN, 37, 6); //Hexa
+		gl.drawArrays(gl.TRIANGLE_FAN, 43, 5); //Penta
+		gl.drawArrays(gl.TRIANGLE_STRIP, 48, 17 ); //Ribbon
 		gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
 	}
 	
