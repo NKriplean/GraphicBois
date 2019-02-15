@@ -130,7 +130,7 @@ window.onload = function init(){
 	document.getElementById("vertDown").onclick = function(){
 		if(num > 0)
 		{
-			num -= 10;
+			num -= 1;
 		}
 		else if (num === 0)
 		{
@@ -145,7 +145,7 @@ window.onload = function init(){
     document.getElementById("vertUp").onclick = function(){
 		if(num < 1000)
 		{
-			num += 10;
+			num += 1;
 		}
 		else if (num === 1000)
 		{
@@ -281,7 +281,7 @@ window.onkeydown = function(event) {
 		{
 			if(num > 0)
 			{
-				num -= 10;
+				num -= 1;
 			}
 			break;
 		}
@@ -294,7 +294,7 @@ window.onkeydown = function(event) {
 		{
 			if(num < 1000)
 			{
-				num += 10;
+				num += 1;
 			}
 			break;
 		}
