@@ -37,7 +37,14 @@ window.onload = function init(){
 		vec2(-.75,-.75),
 		vec2(-.75,-.5),
 		vec2(-.5,-.5),
-		vec2(-.5,-.75)
+		vec2(-.5,-.75),
+		
+		vec2(.75,.75),
+		vec2(.75,.5),
+		vec2(.5,.5),
+		vec2(.5,.75)
+		
+		
 		
     ];
     
@@ -53,6 +60,11 @@ window.onload = function init(){
 		vec4(1, 1, 0, 1),
 		vec4(1, 1, 0, 1),
 		//
+		vec4(0,1,0,1),
+		vec4(0,1,0,1),
+		vec4(0,1,0,1),
+		vec4(0,1,0,1),
+		
 		vec4(0,1,0,1),
 		vec4(0,1,0,1),
 		vec4(0,1,0,1),
@@ -166,51 +178,49 @@ function makePent()
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
 	
-	gl.uniform1f(xCoord, 1);
-	gl.uniform1f(yCoord, 1);
-	gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
-
-	gl.viewport(0, 0, canvas.width/2, canvas.height/2);
-	gl.drawArrays(gl.LINES, 0, 6);
-	gl.drawArrays(gl.TRIANGLES, 6, 3);
-	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
-	gl.drawArrays(gl.TRIANGLE_FAN, 13, 5);
-	gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
-	
-	////////////////////////////////////////////////////////////////
-	gl.uniform1f(xCoord, 1);
-	gl.uniform1f(yCoord, -1);
-	
-	gl.viewport(0, canvas.height/2, canvas.width/2, canvas.height/2);
-	gl.drawArrays(gl.LINES, 0, 6);
-	gl.drawArrays(gl.TRIANGLES, 6, 3);
-	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
-	gl.drawArrays(gl.TRIANGLE_FAN, 13, 5);
-	gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
-	
-	///////////////////////////////////////////////////////////////
-	gl.uniform1f(xCoord, -1);
-	gl.uniform1f(yCoord, -1);
-	
-	gl.viewport(canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
-	gl.drawArrays(gl.LINES, 0, 6);
-	gl.drawArrays(gl.TRIANGLES, 6, 3);
-	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
-	gl.drawArrays(gl.TRIANGLE_FAN, 13, 5);
-	gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
-	
-	////////////////////////////////////////////////////////////////////
-	gl.uniform1f(xCoord, -1);
-	gl.uniform1f(yCoord, 1);
-	
-	gl.viewport(canvas.width/2, 0, canvas.width/2, canvas.height/2);
-	gl.drawArrays(gl.LINES, 0, 6);
-	gl.drawArrays(gl.TRIANGLES, 6, 3);
-	gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
-	gl.drawArrays(gl.TRIANGLE_FAN, 13, 5);
-	gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
+	for(var i = 0; i < 4; i++)
+	{
+		switch (i) {
+			case 0 :
+			{
+				gl.uniform1f(xCoord, 1);
+				gl.uniform1f(yCoord, 1);
+				gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
+				gl.viewport(0, 0, canvas.width/2, canvas.height/2);
+				break;
+			}
+			case 1 :
+			{
+				gl.uniform1f(xCoord, 1);
+				gl.uniform1f(yCoord, -1);
+				gl.viewport(0, canvas.height/2, canvas.width/2, canvas.height/2);
+				break;
+			}
+			case 2 :
+			{
+				gl.uniform1f(xCoord, -1);
+				gl.uniform1f(yCoord, -1);
+				gl.viewport(canvas.width/2, canvas.height/2, canvas.width/2, canvas.height/2);
+				break;
+			}
+			case 3 :
+			{
+				gl.uniform1f(xCoord, -1);
+				gl.uniform1f(yCoord, 1);
+				gl.viewport(canvas.width/2, 0, canvas.width/2, canvas.height/2);
+				break;
+			}
+		}
+		gl.drawArrays(gl.LINES, 0, 6);
+		gl.drawArrays(gl.TRIANGLES, 6, 3);
+		gl.drawArrays(gl.TRIANGLE_FAN, 9, 4);
+		gl.drawArrays(gl.TRIANGLE_FAN, 13, 4);
+		gl.drawArrays(gl.TRIANGLE_FAN, 17, 5);
+		gl.drawArrays(gl.LINE_LOOP, vertices.length-num, num);
+	}
 	
 	requestAnimFrame( render );
+	
 }
 
 window.onkeydown = function(event) {
