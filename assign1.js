@@ -127,9 +127,35 @@ window.onload = function init(){
 	xCoord = gl.getUniformLocation(program, "xCoord");
 	yCoord = gl.getUniformLocation(program, "yCoord");
 	
-	document.getElementById("vertDown").onclick = function(){num -= 10;};
+	document.getElementById("vertDown").onclick = function(){
+		if(num > 0)
+		{
+			num -= 10;
+		}
+		else if (num === 0)
+		{
+			document.getElementById("vertDown").disable = true;
+		}
+		else
+		{
+			document.getElementById("vertDown").disable = false;
+		}
+	};
     document.getElementById("vertReset").onclick = function(){num = 1000;};
-    
+    document.getElementById("vertUp").onclick = function(){
+		if(num < 1000)
+		{
+			num += 10;
+		}
+		else if (num === 1000)
+		{
+			document.getElementById("vertUp").disable = true;
+		}
+		else
+		{
+			document.getElementById("vertUp").disable = false;
+		}
+	};
     
     render();
 };
@@ -251,12 +277,27 @@ window.onkeydown = function(event) {
     // returned because the shift-key is regarded as a separate key in
     // itself.  Hence upper- and lower-case can't be distinguished.
     switch (key) {
-    case 'D' :
-	num -= 10;
-	break;
-    case 'R' :
-	num = 1000;
-	break;
+		case 'D' :
+		{
+			if(num > 0)
+			{
+				num -= 10;
+			}
+			break;
+		}
+		case 'R' :
+		{
+			num = 1000;
+			break;
+		}
+		case 'U' :
+		{
+			if(num < 1000)
+			{
+				num += 10;
+			}
+			break;
+		}
     }
 };
 
