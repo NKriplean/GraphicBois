@@ -1,14 +1,12 @@
 var gl;
 var points;
-///////////////////////////////////////////////
-//var scaleLoc;
 var canvas;
-var xCoord;
+var xCoord; 
 var yCoord;
 var program;
 var vertices = [];
 var colors = [];
-var num = 1000;
+var num = 1000; //Used in polar curve
 
 
 window.onload = function init(){
@@ -19,27 +17,26 @@ window.onload = function init(){
     if ( !gl ) { alert( "WebGL isn't available" );
                }
 
-    // Four 2D Vertices using Angel/Shreiner utility class vac2
     vertices = [           
         
 		
-		vec2(-1, -1),
+		vec2(-1, -1), //Lines
 		vec2(1, 1),
 		vec2(-1, 1),
 		vec2(1, 1),
 		vec2(1, -1),
 		vec2(1, 1),
 		
-		vec2(1, 1),
+		vec2(1, 1), //Tri
         vec2(2, .5),
         vec2(.6,-.3),
 		
-		vec2(-.75,-.75),
+		vec2(-.75,-.75), //Square1
 		vec2(-.75,-.5),
 		vec2(-.5,-.5),
 		vec2(-.5,-.75),
 		
-		vec2(.75,.75),
+		vec2(.75,.75), //Square2
 		vec2(.75,.5),
 		vec2(.5,.5),
 		vec2(.5,.75)
@@ -49,27 +46,34 @@ window.onload = function init(){
     ];
     
     colors = [
-		vec4(1, 0, 0, 1),
+		vec4(1, 0, 0, 1), //Lines
 		vec4(1, 0, 0, 1),
 		vec4(1, 0, 0, 1),
 		vec4(1, 0, 0, 1),
 		vec4(1, 0, 0, 1),
 		vec4(1, 0, 0, 1),
 		//
-		vec4(1, 1, 0, 1),
+		vec4(1, 1, 0, 1), //Tri
 		vec4(1, 0, 1, 1),
 		vec4(1, 1, 0, 1),
 		//
-		vec4(0,1,0,1),
+		vec4(0,1,0,1), //Square1
 		vec4(0,1,0,1),
 		vec4(0,1,0,1),
 		vec4(0,1,0,1),
 		
-		vec4(0,1,0,1),
+		vec4(0,1,0,1), //Square2
 		vec4(0,1,0,1),
 		vec4(0,1,0,1),
 		vec4(0,1,0,1)
 	]
+	
+	//Our functions to create corresponding shapes, both the vertices and the colors.
+	makeDodeca();
+	makeHex();
+	makePent();
+	makeRibbon();
+	makeVertices();
 	
 	
     //  Configure WebGL
@@ -81,14 +85,8 @@ window.onload = function init(){
 
     program = initShaders( gl, "vertex-shader", "fragment-shader" ); 
     gl.useProgram( program );
-
-    // Load the data into the GPU using A/S flatten function
 	
-	makeDodeca();
-	makeHex();
-	makePent();
-	makeRibbon();
-	makeVertices();
+	// Load the data into the GPU using A/S flatten function
 
     var bufferId = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
@@ -125,10 +123,11 @@ window.onload = function init(){
 	
 	
 	   
-    /////////////////////////////////////////////////
+    //Used for mirroring vertices in the correct viewports
 	xCoord = gl.getUniformLocation(program, "xCoord");
 	yCoord = gl.getUniformLocation(program, "yCoord");
 	
+	//Removes rendered vertices from polar curve
 	document.getElementById("vertDown").onclick = function(){
 		if(num > 0)
 		{
@@ -143,7 +142,9 @@ window.onload = function init(){
 			document.getElementById("vertDown").disable = false;
 		}
 	};
+	//Resets rendered vertices for polar curve
     document.getElementById("vertReset").onclick = function(){num = 1000;};
+	//Adds rendered vertices to polar curve
     document.getElementById("vertUp").onclick = function(){
 		if(num < 1000)
 		{
@@ -273,6 +274,7 @@ function makeDodeca()
     
 }
 
+//Produces the faded boxes on the sides of the canvas
 function makeRibbon(){
 	vertices.push(vec2(-1.-1));
 	colors.push(vec4(1,0,0,1));
@@ -293,6 +295,7 @@ function render() {
 	
 	for(var i = 0; i < 4; i++)
 	{
+		//Switch dictates which viewport is being draw in, and how it is mirrored accordingly
 		switch (i) {
 			case 0 :
 			{
@@ -345,7 +348,7 @@ window.onkeydown = function(event) {
     // returned because the shift-key is regarded as a separate key in
     // itself.  Hence upper- and lower-case can't be distinguished.
     switch (key) {
-		case 'D' :
+		case 'D' : //Remove vertices shortcut
 		{
 			if(num > 0)
 			{
@@ -353,14 +356,14 @@ window.onkeydown = function(event) {
 			}
 			break;
 		}
-		case 'R' :
+		case 'R' : //Reset shortcut
 		{
 			num = 1000;
 			break;
 		}
 		case 'U' :
 		{
-			if(num < 1000)
+			if(num < 1000) //Add vertices shortcut
 			{
 				num += 1;
 			}
