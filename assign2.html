@@ -14,6 +14,7 @@
 		
 		uniform float xCoord;
 		uniform float yCoord;
+		uniform float theta;
 		uniform int mode;
 	
 		void main () {
@@ -21,7 +22,9 @@
 			fColor = vColor;
 			//if(mode == 1)
 			//{
-				gl_Position = vec4(vPosition.x * xCoord, vPosition.y * yCoord, 0, 1);
+			gl_Position = vec4(cos(theta) * (vPosition.x * xCoord) - sin(theta) * (vPosition.y * yCoord),
+		                  sin(theta) * (vPosition.x * xCoord) + cos(theta) * (vPosition.y * yCoord),
+		                  0.0, 1.0);
 			//}
 			//else if(mode == 2)
 			if(mode == 2)
@@ -68,5 +71,7 @@
 		<button id= "vertDown">Remove Vertices (D)</button>
 		<button id= "vertReset">Reset (R)</button>
 		<button id= "vertUp">Add Vertices (U)</button>
+		<button id= "CCButton">Rotate Counter-Clockwise (C)</button>
+		<button id= "CLButton">Rotate Clockwise (L)</button>
 	</body>
 </html>
