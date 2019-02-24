@@ -1,3 +1,14 @@
+/*
+Golly-Jee Wiz points eligable things:
+Color - All vertices have corresponding colors attached to them. The smooth_flag was used in uniform1i
+		in Case 0 of render to give us smooth shading.
+
+Polar Curve Vertices - The user was enabled the ability to add and remove vertices to our polar curve.
+		This results in what looks like an unwinding curve.
+
+*/
+
+
 var gl;
 var points;
 var canvas;
