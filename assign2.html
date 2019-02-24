@@ -6,20 +6,24 @@
 	<script id="vertex-shader" type="x-shader/x-vertex">
 		// GLSLvertexshadercode
 		attribute vec4 vPosition;
+
 		attribute vec4 gPosition;
 		attribute vec4 invPosition;
+
 		//////// following two gotten from colored, turning pentagon example
 		attribute vec4 vColor;
 		varying vec4 fColor;
 		
 		uniform float xCoord;
 		uniform float yCoord;
+
 		uniform float theta;
 		uniform int mode;
 	
 		void main () {
 		
 			fColor = vColor;
+
 			//if(mode == 1)
 			//{
 			gl_Position = vec4(cos(theta) * (vPosition.x * xCoord) - sin(theta) * (vPosition.y * yCoord),
@@ -71,7 +75,14 @@
 		<button id= "vertDown">Remove Vertices (D)</button>
 		<button id= "vertReset">Reset (R)</button>
 		<button id= "vertUp">Add Vertices (U)</button>
-		<button id= "CCButton">Rotate Counter-Clockwise (C)</button>
+    <button id= "CCButton">Rotate Counter-Clockwise (C)</button>
 		<button id= "CLButton">Rotate Clockwise (L)</button>
+		<p>Golly-Jee Wiz points eligable things: </br>
+		   Color - All vertices have corresponding colors attached to them. </br> 
+		   The smooth_flag was used in uniform1i in Case 0 of render to </br> 
+		   give us smooth shading.</br>
+		   Polar Curve Vertices - The user was enabled the ability to add </br>
+		   and remove vertices to our polar curve. This results in what </br>
+		   looks like an unwinding curve.</p>
 	</body>
 </html>

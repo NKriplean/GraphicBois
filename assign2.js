@@ -1,3 +1,18 @@
+/*
+Golly-Jee Wiz points eligable things:
+Color - All vertices have corresponding colors attached to them. The smooth_flag was used in uniform1i
+		in Case 0 of render to give us smooth shading.
+
+Polar Curve Vertices - The user was enabled the ability to add and remove vertices to our polar curve.
+		This results in what looks like an unwinding curve.
+		
+Citations: https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Vectors
+		Used swizzle code for our MorphVerticeByLog function
+
+
+*/
+
+
 var gl;
 var points;
 var theta = 0.0;
@@ -31,8 +46,8 @@ window.onload = function init(){
 		vec2(1, 1),
 		
 		vec2(1, 1), //Tri
-        vec2(2, .5),
-        vec2(.6,-.3),
+    vec2(2, .5),
+    vec2(.6,-.3),
 		
 		vec2(-.75,-.75), //Square1
 		vec2(-.75,-.5),
@@ -307,6 +322,7 @@ function render() {
 			{
 				gl.uniform1f(xCoord, 1);
 				gl.uniform1f(yCoord, 1);
+
 			    // Get the rotation uniform to the GPU
                 gl.uniform1f(thetaLoc, theta);
 				gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
