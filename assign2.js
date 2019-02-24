@@ -1,30 +1,34 @@
-/*
-Golly-Jee Wiz points eligable things:
-Color - All vertices have corresponding colors attached to them. The smooth_flag was used in uniform1i
-		in Case 0 of render to give us smooth shading.
-
-Polar Curve Vertices - The user was enabled the ability to add and remove vertices to our polar curve.
-		This results in what looks like an unwinding curve.
-		
-Citations: https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Vectors
-		Used swizzle code for our MorphVerticeByLog function
-
-
-*/
+//Citation: https://stackoverflow.com/questions/17726753/get-a-random-number-between-0-0200-and-0-120-float-numbers
 
 
 var gl;
 var points;
 var theta = 0.0;
 var thetaLoc;
+var tweenLoc;
+var tweenLoc2;
+var drawModeLoc;
+var goingToInv = true;
+var tweenFactor = 0.0;
+var tweenFactor2 = 0.0;
 var rotationDegree = radians(5.0);
 var canvas;
 var xCoord; 
 var yCoord;
 var program;
 var vertices = [];
+var morphVertices = [];
 var colors = [];
 var num = 1000; //Used in polar curve
+
+var gVertBuff;
+var gColorBuff;
+var gPos;
+var gCol;
+
+var tweening = false;
+
+var mode = 1; // 1 = mode 1 / 2 = mode 2 / 3 = mode 3
 
 
 window.onload = function init(){
@@ -46,8 +50,8 @@ window.onload = function init(){
 		vec2(1, 1),
 		
 		vec2(1, 1), //Tri
-    vec2(2, .5),
-    vec2(.6,-.3),
+        vec2(2, .5),
+        vec2(.6,-.3),
 		
 		vec2(-.75,-.75), //Square1
 		vec2(-.75,-.5),
@@ -93,6 +97,8 @@ window.onload = function init(){
 	makeRibbon();
 	makeVertices();
 	
+	morphVerticesCreation();
+	
 	
     //  Configure WebGL
     
@@ -106,8 +112,8 @@ window.onload = function init(){
 	
 	// Load the data into the GPU using A/S flatten function
 
-    var bufferId = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
+    var sBufferId = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, sBufferId );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW ); 
                                                                          
 
@@ -139,6 +145,19 @@ window.onload = function init(){
 	gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 	gl.enableVertexAttribArray(vColor);
 	
+	gVertBuff = gl.createBuffer();
+	gl.bindBuffer( gl.ARRAY_BUFFER, gVertBuff );
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(morphVertices), gl.STATIC_DRAW );
+	gPos = gl.getAttribLocation( program, "gPosition" );
+	gl.vertexAttribPointer( gPos, 2, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray( gPos );
+	gColorBuff = gl.createBuffer();
+	gl.bindBuffer( gl.ARRAY_BUFFER, gColorBuff );
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
+	gCol = gl.getAttribLocation( program, "gColor" );
+	gl.vertexAttribPointer( gCol, 4, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray( gCol );
+	
 	thetaLoc = gl.getUniformLocation(program, "theta");
 	
 	document.getElementById("CLButton").onclick = function(){theta -= rotationDegree;};
@@ -164,7 +183,10 @@ window.onload = function init(){
 		}
 	};
 	//Resets rendered vertices for polar curve
-    document.getElementById("vertReset").onclick = function(){num = 1000;};
+    document.getElementById("vertReset").onclick = function(){
+			num = 1000;
+			mode = 1;
+		};
 	//Adds rendered vertices to polar curve
     document.getElementById("vertUp").onclick = function(){
 		if(num < 1000)
@@ -180,6 +202,10 @@ window.onload = function init(){
 			document.getElementById("vertUp").disable = false;
 		}
 	};
+	
+	tweenLoc = gl.getUniformLocation(program, "tween");
+	tweenLoc2 = gl.getUniformLocation(program, "tween2");
+	drawModeLoc = gl.getUniformLocation(program, "mode");
     
     render();
 };
@@ -311,8 +337,62 @@ function makeRibbon(){
 	}
 }
 
+function morphVerticesCreation()
+{
+	for(var i = 0; i < vertices.length; i++)
+	{
+		var vert = vec2((Math.random() * ((-1.0) - 1.0) + 1.0), (Math.random() * ((-1.0) - 1.0) + 1.0));
+		console.log(vert);
+		morphVertices.push(vert);
+	}
+}
+
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
+	
+	if(mode == 1)
+	{
+		gl.uniform1i(drawModeLoc, 1);
+	}
+	else if(mode == 2)
+	{
+		//TO BE DONE
+		gl.uniform1i(drawModeLoc, 2);
+		
+		if (tweening) {
+			tweenFactor = Math.min(tweenFactor + 0.01, 1.0);
+			if (tweenFactor >= 1.0)  {
+				tweening = false;
+			}
+		}
+		else {
+			tweenFactor = Math.max(tweenFactor - 0.01, 0.0);
+			if (tweenFactor <= 0.0) {
+				tweening = true;
+			}           
+		}
+		gl.uniform1f(tweenLoc, tweenFactor);
+		
+		
+	}
+	else if(mode == 3)
+	{
+		gl.uniform1i(drawModeLoc, 3);
+		if (goingToInv) {
+			tweenFactor2 = Math.min(tweenFactor2 + 0.01, 1.0);
+			if (tweenFactor2 >= 1.0)  {
+				goingToInv = false;
+			}
+		}
+		else {
+			tweenFactor2 = Math.max(tweenFactor2 - 0.01, 0.0);
+			if (tweenFactor2 <= 0.0) {
+				goingToInv = true;
+			}           
+		}
+		gl.uniform1f(tweenLoc2, tweenFactor2);
+	}
+	
 	
 	for(var i = 0; i < 4; i++)
 	{
@@ -322,7 +402,6 @@ function render() {
 			{
 				gl.uniform1f(xCoord, 1);
 				gl.uniform1f(yCoord, 1);
-
 			    // Get the rotation uniform to the GPU
                 gl.uniform1f(thetaLoc, theta);
 				gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
@@ -382,7 +461,10 @@ window.onkeydown = function(event) {
 		}
 		case 'R' : //Reset shortcut
 		{
+			//TODO: Reset the rotation as well
 			num = 1000;
+			mode = 1;
+			theta = 0.0;
 			break;
 		}
 		case 'U' :
@@ -401,6 +483,24 @@ window.onkeydown = function(event) {
 		case 'C' :
 		{
 			theta += rotationDegree;
+			break;
+		}
+		case '1' :
+		{
+			mode = 1;
+			gl.uniform1i(drawModeLoc, 1);
+			break;
+		}
+		case '2' :
+		{
+			mode = 2;
+			gl.uniform1i(drawModeLoc, 2);
+			break;
+		}
+		case '3' :
+		{
+			mode = 3;
+			gl.uniform1i(drawModeLoc, 3);
 			break;
 		}
     }
