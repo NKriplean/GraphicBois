@@ -6,17 +6,40 @@
 	<script id="vertex-shader" type="x-shader/x-vertex">
 		// GLSLvertexshadercode
 		attribute vec4 vPosition;
+
+		attribute vec4 gPosition;
+		attribute vec4 invPosition;
+
 		//////// following two gotten from colored, turning pentagon example
 		attribute vec4 vColor;
 		varying vec4 fColor;
 		
 		uniform float xCoord;
 		uniform float yCoord;
+
+		uniform float theta;
+		uniform int mode;
 	
 		void main () {
 		
 			fColor = vColor;
-			gl_Position = vec4(vPosition.x * xCoord, vPosition.y * yCoord, 0, 1);
+
+			//if(mode == 1)
+			//{
+			gl_Position = vec4(cos(theta) * (vPosition.x * xCoord) - sin(theta) * (vPosition.y * yCoord),
+		                  sin(theta) * (vPosition.x * xCoord) + cos(theta) * (vPosition.y * yCoord),
+		                  0.0, 1.0);
+			//}
+			//else if(mode == 2)
+			if(mode == 2)
+			{
+				//That other one
+			}
+			else if(mode == 3)
+			{
+				gl_Position = vec4(invPosition.y * xCoord, invPosition.x * yCoord, 0, 1);
+			}
+			
 		}
 	</script>
 
@@ -52,6 +75,8 @@
 		<button id= "vertDown">Remove Vertices (D)</button>
 		<button id= "vertReset">Reset (R)</button>
 		<button id= "vertUp">Add Vertices (U)</button>
+    <button id= "CCButton">Rotate Counter-Clockwise (C)</button>
+		<button id= "CLButton">Rotate Clockwise (L)</button>
 		<p>Golly-Jee Wiz points eligable things: </br>
 		   Color - All vertices have corresponding colors attached to them. </br> 
 		   The smooth_flag was used in uniform1i in Case 0 of render to </br> 

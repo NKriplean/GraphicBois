@@ -15,6 +15,9 @@ Citations: https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Vectors
 
 var gl;
 var points;
+var theta = 0.0;
+var thetaLoc;
+var rotationDegree = radians(5.0);
 var canvas;
 var xCoord; 
 var yCoord;
@@ -43,8 +46,8 @@ window.onload = function init(){
 		vec2(1, 1),
 		
 		vec2(1, 1), //Tri
-        vec2(2, .5),
-        vec2(.6,-.3),
+    vec2(2, .5),
+    vec2(.6,-.3),
 		
 		vec2(-.75,-.75), //Square1
 		vec2(-.75,-.5),
@@ -136,7 +139,10 @@ window.onload = function init(){
 	gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 	gl.enableVertexAttribArray(vColor);
 	
+	thetaLoc = gl.getUniformLocation(program, "theta");
 	
+	document.getElementById("CLButton").onclick = function(){theta -= rotationDegree;};
+    document.getElementById("CCButton").onclick = function(){theta += rotationDegree;};
 	   
     //Used for mirroring vertices in the correct viewports
 	xCoord = gl.getUniformLocation(program, "xCoord");
@@ -316,6 +322,9 @@ function render() {
 			{
 				gl.uniform1f(xCoord, 1);
 				gl.uniform1f(yCoord, 1);
+
+			    // Get the rotation uniform to the GPU
+                gl.uniform1f(thetaLoc, theta);
 				gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
 				gl.viewport(0, 0, canvas.width/2, canvas.height/2);
 				break;
@@ -382,6 +391,16 @@ window.onkeydown = function(event) {
 			{
 				num += 1;
 			}
+			break;
+		}
+		case 'L' :
+		{
+			theta -= rotationDegree;
+			break;
+		}
+		case 'C' :
+		{
+			theta += rotationDegree;
 			break;
 		}
     }
