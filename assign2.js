@@ -20,16 +20,34 @@ Citations: https://www.khronos.org/opengl/wiki/Data_Type_(GLSL)#Vectors
 
 */
 
-
 var gl;
 var points;
+var theta = 0.0;
+var thetaLoc;
+var tweenLoc;
+var tweenLoc2;
+var drawModeLoc;
+var goingToInv = true;
+var tweenFactor = 0.0;
+var tweenFactor2 = 0.0;
+var rotationDegree = radians(5.0);
 var canvas;
 var xCoord; 
 var yCoord;
 var program;
 var vertices = [];
+var morphVertices = [];
 var colors = [];
 var num = 1000; //Used in polar curve
+
+var gVertBuff;
+var gColorBuff;
+var gPos;
+var gCol;
+
+var tweening = false;
+
+var mode = 1; // 1 = mode 1 / 2 = mode 2 / 3 = mode 3
 
 
 window.onload = function init(){
@@ -98,6 +116,8 @@ window.onload = function init(){
 	makeRibbon();
 	makeVertices();
 	
+	morphVerticesCreation();
+	
 	
     //  Configure WebGL
     
@@ -111,8 +131,8 @@ window.onload = function init(){
 	
 	// Load the data into the GPU using A/S flatten function
 
-    var bufferId = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
+    var sBufferId = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, sBufferId );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW ); 
                                                                          
 
@@ -179,7 +199,10 @@ window.onload = function init(){
 		}
 	};
 	//Resets rendered vertices for polar curve
-    document.getElementById("vertReset").onclick = function(){num = 1000;};
+    document.getElementById("vertReset").onclick = function(){
+			num = 1000;
+			mode = 1;
+		};
 	//Adds rendered vertices to polar curve
     document.getElementById("vertUp").onclick = function(){
 		if(num < 1000)
@@ -336,8 +359,62 @@ function makeRibbon(){
 	}
 }
 
+function morphVerticesCreation()
+{
+	for(var i = 0; i < vertices.length; i++)
+	{
+		var vert = vec2((Math.random() * ((-1.0) - 1.0) + 1.0), (Math.random() * ((-1.0) - 1.0) + 1.0));
+		console.log(vert);
+		morphVertices.push(vert);
+	}
+}
+
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
+	
+	if(mode == 1)
+	{
+		gl.uniform1i(drawModeLoc, 1);
+	}
+	else if(mode == 2)
+	{
+		//TO BE DONE
+		gl.uniform1i(drawModeLoc, 2);
+		
+		if (tweening) {
+			tweenFactor = Math.min(tweenFactor + 0.01, 1.0);
+			if (tweenFactor >= 1.0)  {
+				tweening = false;
+			}
+		}
+		else {
+			tweenFactor = Math.max(tweenFactor - 0.01, 0.0);
+			if (tweenFactor <= 0.0) {
+				tweening = true;
+			}           
+		}
+		gl.uniform1f(tweenLoc, tweenFactor);
+		
+		
+	}
+	else if(mode == 3)
+	{
+		gl.uniform1i(drawModeLoc, 3);
+		if (goingToInv) {
+			tweenFactor2 = Math.min(tweenFactor2 + 0.01, 1.0);
+			if (tweenFactor2 >= 1.0)  {
+				goingToInv = false;
+			}
+		}
+		else {
+			tweenFactor2 = Math.max(tweenFactor2 - 0.01, 0.0);
+			if (tweenFactor2 <= 0.0) {
+				goingToInv = true;
+			}           
+		}
+		gl.uniform1f(tweenLoc2, tweenFactor2);
+	}
+	
 	
 	for(var i = 0; i < 4; i++)
 	{
@@ -347,6 +424,8 @@ function render() {
 			{
 				gl.uniform1f(xCoord, 1);
 				gl.uniform1f(yCoord, 1);
+			    // Get the rotation uniform to the GPU
+                gl.uniform1f(thetaLoc, theta);
 				gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
 				gl.viewport(0, 0, canvas.width/2, canvas.height/2);
 				break;
@@ -404,7 +483,10 @@ window.onkeydown = function(event) {
 		}
 		case 'R' : //Reset shortcut
 		{
+			//TODO: Reset the rotation as well
 			num = 1000;
+			mode = 1;
+			theta = 0.0;
 			break;
 		}
 		case 'U' :
