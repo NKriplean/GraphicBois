@@ -144,7 +144,20 @@ window.onload = function init(){
 	gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 	gl.enableVertexAttribArray(vColor);
 	
+	gVertBuff = gl.createBuffer();
+	gl.bindBuffer( gl.ARRAY_BUFFER, gVertBuff );
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(morphVertices), gl.STATIC_DRAW );
+	gPos = gl.getAttribLocation( program, "gPosition" );
+	gl.vertexAttribPointer( gPos, 2, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray( gPos );
+	gColorBuff = gl.createBuffer();
+	gl.bindBuffer( gl.ARRAY_BUFFER, gColorBuff );
+	gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
+	gCol = gl.getAttribLocation( program, "gColor" );
+	gl.vertexAttribPointer( gCol, 4, gl.FLOAT, false, 0, 0 );
+	gl.enableVertexAttribArray( gCol );
 	
+	thetaLoc = gl.getUniformLocation(program, "theta");
 	   
     //Used for mirroring vertices in the correct viewports
 	xCoord = gl.getUniformLocation(program, "xCoord");
@@ -182,6 +195,16 @@ window.onload = function init(){
 			document.getElementById("vertUp").disable = false;
 		}
 	};
+	
+	document.getElementById("CLButton").onclick = function(){theta -= rotationDegree;};
+	
+    document.getElementById("CCButton").onclick = function(){theta += rotationDegree;};
+	
+	document.getElementById("RemoveCurve").onclick = function(){num = 0;}
+	
+	tweenLoc = gl.getUniformLocation(program, "tween");
+	tweenLoc2 = gl.getUniformLocation(program, "tween2");
+	drawModeLoc = gl.getUniformLocation(program, "mode");
     
     render();
 };
@@ -390,6 +413,39 @@ window.onkeydown = function(event) {
 			{
 				num += 1;
 			}
+			break;
+		}
+		case 'L' :
+		{
+			theta -= rotationDegree;
+			break;
+		}
+		case 'C' :
+		{
+			theta += rotationDegree;
+			break;
+		}
+		case 'F' : 
+		{
+			num = 0;
+			break;
+		}
+		case '1' :
+		{
+			mode = 1;
+			gl.uniform1i(drawModeLoc, 1);
+			break;
+		}
+		case '2' :
+		{
+			mode = 2;
+			gl.uniform1i(drawModeLoc, 2);
+			break;
+		}
+		case '3' :
+		{
+			mode = 3;
+			gl.uniform1i(drawModeLoc, 3);
 			break;
 		}
     }
