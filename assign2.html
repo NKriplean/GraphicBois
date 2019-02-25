@@ -32,7 +32,14 @@
 			}
 			else if(mode == 2)
 			{
-				gl_Position = mix(vec4(vPosition.x * xCoord, vPosition.y * yCoord, 0, 1), vec4(gPosition.x * xCoord, gPosition.y * yCoord, 0, 1), tween); // Morphed polygon
+				gl_Position = mix(vec4(cos(theta) * (vPosition.x * xCoord) - sin(theta) * (vPosition.y * yCoord),
+		                      sin(theta) * (vPosition.x * xCoord) + cos(theta) * (vPosition.y * yCoord),
+		                      0.0, 1.0), 
+							  vec4(cos(theta) * (gPosition.x * xCoord) - sin(theta) * (gPosition.y * yCoord),
+		                      sin(theta) * (gPosition.x * xCoord) + cos(theta) * (gPosition.y * yCoord),
+		                      0.0, 1.0),
+							  tween); // Morphed polygon
+							  
                 fColor = mix(vColor, gColor, tween);
 			}
 			else if(mode == 3)
@@ -79,6 +86,6 @@
 		<button id= "vertUp">Add Vertices (U)</button>
 		<button id= "CCButton">Rotate Counter-Clockwise (C)</button>
 		<button id= "CLButton">Rotate Clockwise (L)</button>
-		<button id = "Button3">Tween (T)</button>
+		<button id= "RemoveCurve">Remove Polar Curve (F)</button>
 	</body>
 </html>
