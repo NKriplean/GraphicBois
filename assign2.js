@@ -159,9 +159,6 @@ window.onload = function init(){
 	gl.enableVertexAttribArray( gCol );
 	
 	thetaLoc = gl.getUniformLocation(program, "theta");
-	
-	document.getElementById("CLButton").onclick = function(){theta -= rotationDegree;};
-    document.getElementById("CCButton").onclick = function(){theta += rotationDegree;};
 	   
     //Used for mirroring vertices in the correct viewports
 	xCoord = gl.getUniformLocation(program, "xCoord");
@@ -202,6 +199,12 @@ window.onload = function init(){
 			document.getElementById("vertUp").disable = false;
 		}
 	};
+	
+	document.getElementById("CLButton").onclick = function(){theta -= rotationDegree;};
+	
+    document.getElementById("CCButton").onclick = function(){theta += rotationDegree;};
+	
+	document.getElementById("RemoveCurve").onclick = function(){num = 0;}
 	
 	tweenLoc = gl.getUniformLocation(program, "tween");
 	tweenLoc2 = gl.getUniformLocation(program, "tween2");
@@ -483,6 +486,11 @@ window.onkeydown = function(event) {
 		case 'C' :
 		{
 			theta += rotationDegree;
+			break;
+		}
+		case 'F' : 
+		{
+			num = 0;
 			break;
 		}
 		case '1' :
