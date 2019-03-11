@@ -12,12 +12,11 @@ var seed_poly = [];
 var matriceList = [];
 var matIndex = 0;
 var level = 8;
-
+var mtUniform;
 var colors = [];
 var vertices = [];
 var vPosition;
 var modelTransform;
-var modelTransformList = [];
 var index = 0;
 var bufferID;
 var program;
@@ -56,6 +55,7 @@ window.onload = function init(){
 		for(var i = 0; i < seed_poly.length; i++)
 		{
 			vertices.push(seed_poly[i]);
+			console.log(i);
 		}
 	    bufferID = gl.createBuffer();
 	    gl.bindBuffer( gl.ARRAY_BUFFER, bufferID );
@@ -73,6 +73,10 @@ window.onload = function init(){
 		var vColor = gl.getAttribLocation(program, "vColor");
 		gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(vColor);
+		
+		matriceList.push(modelTransform);
+		
+		mtUniform = gl.getUniformLocation(program, "modelTransform");
 		
 	    render();
 	});
@@ -93,21 +97,16 @@ window.onload = function init(){
 	};
 
 	document.getElementById("cloneButton").addEventListener("click",
-	// When clicked we are done clicking in the polygon
 	function(event) {
-		//matriceList.push(modelTransform);
-		/////////
-		//modelTransform = mult(1.0,0.0,0.01,
-		//				   0.0,1.0,0.01,
-		//				   0.0,0.0,1.0,
-		//				   modelTransform);
+		modelTransform = mult(mat3(vec3(1.0,0.0,0.01),
+						      vec3(0.0,1.0,0.01),
+						      vec3(0.0,0.0,1.0)),
+						      modelTransform);
 	    for(var i = 0; i < seed_poly.length; i++)
 		{
-			vertices.push(seed_poly[i]); //TODO: Multiply by child matrix?
+			vertices.push(seed_poly[i]);
 			console.log(seed_poly[i]);
 		}
-		
-		
 		
 	    gl.bindBuffer( gl.ARRAY_BUFFER, bufferID );
 	    gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );
@@ -124,6 +123,9 @@ window.onload = function init(){
 		var vColor = gl.getAttribLocation(program, "vColor");
 		gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(vColor);
+		
+		matriceList.push(modelTransform);
+		
 	});
 	
 	
@@ -155,27 +157,38 @@ function render() {
 	
 	gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
 	
-	gl.uniformMatrix3fv(gl.getUniformLocation(program, "modelTransform"),
-			false,
-			flatten(modelTransform));
+	matIndex = 0;
+	//gl.uniformMatrix3fv(gl.getUniformLocation(program, "modelTransform"),
+	//		false,
+	//		flatten(modelTransform));	
+	for(var i = 0; i < vertices.length; i = i + seed_poly.length)
+	{			
+		var currentMatrix = matriceList[matIndex];
+		console.log(matIndex);
+		console.log(currentMatrix);
+		console.log(i);
+		console.log(vertices.length);
+		console.log(seed_poly.length);
+		
+		for(var j = 0; j < seed_poly.length; j++ )
+		{
+			gl.uniformMatrix3fv(mtUniform, false, flatten(currentMatrix));
 			
-	//for(var i = 0; i < vertices.length; i = i + seed_poly.length)
-	//{
-	//	var currentMatrix = matriceList[matIndex];
-	//	for(var j = 0; j < seed_poly.length; j++ )
-	//	{
-	//		var vertMat = mat3(vertices[i+j].x, vertices[i+j].y, 1.0);
-	//		vertMat = mult(vertMat, currentMatrix);
-	//		vertices[i+j].x = vertMat[0].x;
-	//		vertices[i+j].y = vertMat[0].y;
-	//	}
-	//	gl.drawArrays( gl.TRIANGLE_FAN, i, seed_poly.length );
-	//	matIndex++;
-	//}
+			var vertMat = mat3(vec3(vertices[j][0],0.0,0.0), vec3(0.0,vertices[j][1],0.0), vec3(0.0,0.0,1.0));
+			console.log(vertMat);
+			vertMat = mult(vertMat, currentMatrix);
+			vertices[j][0] = vertMat[0][0];
+			vertices[j][1] = vertMat[1][1];
+		}
+		console.log("That boi be drawn");
+		gl.drawArrays( gl.TRIANGLE_FAN, i, seed_poly.length );
+		
+		matIndex++;
+	}
 	
-	for (var i = 0; i < vertices.length; i = i + seed_poly.length) {
-        gl.drawArrays( gl.TRIANGLE_FAN, i, seed_poly.length );
-    };
+	//for (var i = 0; i < vertices.length; i = i + seed_poly.length) {
+    //    gl.drawArrays( gl.TRIANGLE_FAN, i, seed_poly.length );
+    //};
 	
 	requestAnimFrame( render );
 	
