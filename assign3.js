@@ -11,8 +11,11 @@ var canvas;
 var seed_poly = [];
 var matriceList = [];
 var matIndex = 0;
+var currentPoly;
 var level = 8;
+
 var mtUniform;
+
 var colors = [];
 var vertices = [];
 var vPosition;
@@ -22,6 +25,15 @@ var bufferID;
 var program;
 
 var isLast = false;
+var isFractal = false;
+var numpts = 30;
+
+var pMatrix;
+var projection;
+var LEFT = -10.0;
+var RIGHT = 10.0;
+var BOTTOM = 0.0;
+var TOP = 10.0;
 
 
 window.onload = function init(){
@@ -39,6 +51,8 @@ window.onload = function init(){
 		
 	program = initShaders( gl, "vertex-shader", "fragment-shader" ); 
 	gl.useProgram( program );
+	
+	projection = gl.getUniformLocation( program, "projection" );
 	
 	
 	canvas.onmousedown =
@@ -79,9 +93,6 @@ window.onload = function init(){
 		
 	    render();
 	});
-	
-
-    //  Load shaders and initialize attribute buffers using A/S utility initShaders
 	
     document.getElementById("vertReset").onclick = function(){
 			modelTransform = mat3();
@@ -126,8 +137,70 @@ window.onload = function init(){
 		
 	});
 	
+	document.getElementById("sprayFractal").onclick = function(){
+			generateFractalPoints();
+	};
+	
+	function generateFractalPoints () {
+		isFractal = true;
+		var iter, t, p;
+		//var oldx = 0;
+		//var oldy = 0;
+		var oldMat = mat3();
+		//var newx, newy, p;
+		var newMat;
+		var cumulative_prob = [];
+
+		//Original: cumulative_prob.push(myIFS.transformations[0].prob);
+		cumulative_prob.push(myIFS.transformations[0].prob);
+		for (var i = 1; i < myIFS.transformations.length; i++){
+			cumulative_prob.push(cumulative_prob[i-1] +   // Make probability cumulative
+					myIFS.transformations[i].prob); 
+
+			iter = 0;
+			while (iter < numpts){
+			p = Math.random();
+        
+			// Select transformation t
+			t = 0;
+			//Original: while ((p > cumulative_prob[t]) && (t < myIFS.transformations.length - 1)) t++;
+				while ((p > cumulative_prob[t]) && (t < matriceList.length - 1)){ 
+				// Transform point by transformation t 
+				newMat = mult(oldMat,matriceList[t]);
+				//newx = myIFS.transformations[t].rxx*oldx
+				//	+ myIFS.transformations[t].rxy*oldy
+				//	+ myIFS.transformations[t].tx;
+				//newy = myIFS.transformations[t].ryx*oldx
+				//	+ myIFS.transformations[t].ryy*oldy
+				//	+ myIFS.transformations[t].ty;
+
+        
+				// Jump around for awhile without plotting to make sure the
+				// first point seen is attracted into the fractal
+				if (iter > 20) {
+					//vertices.push(vec2(newx, newy));
+					for(var i = 0; i < seed_poly.length; i++)
+					{
+						vertices.push(seed_poly[i]);
+					}
+					populateColors();
+				}
+				oldMat = newMat;
+				matriceList.push(oldMat);
+				t++;
+				iter++;
+		
+				}
+			}
+		}
+	};
+
+	document.getElementById("levelFractal").onclick = function(){
+			generateFractalPointsByLevel();
+	};
 	
 	function generateFractalPointsByLevel (seed, level) {
+		isFractal = true;
 		if (level > 0) {
 		var i, j;
 		for (j = 0; j < seed.length; j++) {
@@ -146,6 +219,7 @@ window.onload = function init(){
 			generateFractalPointsByLevel(next_seed, level - 1);
 			}
 		}
+		
 	};
 	
 };
@@ -153,12 +227,18 @@ window.onload = function init(){
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
 	
+	if(isFractal){
+		pMatrix = ortho(LEFT,RIGHT,BOTTOM,TOP,-1.0,1.0);
+		gl.uniformMatrix4fv( projection, false, flatten(pMatrix) );
+	} else {
+		pMatrix = ortho(-1.0,1.0,-1.0,1.0,-1.0,1.0);
+		gl.uniformMatrix4fv( projection, false, flatten(pMatrix) );
+	}
+	
 	gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
 	
 	matIndex = 0;
-	//gl.uniformMatrix3fv(gl.getUniformLocation(program, "modelTransform"),
-	//		false,
-	//		flatten(modelTransform));	
+
 	for(var i = 0; i < vertices.length; i = i + seed_poly.length)
 	{	
 		if(matIndex > matriceList.length-1){
@@ -166,7 +246,6 @@ function render() {
 		} else {
 			isLast = false;
 		}
-		console.log(isLast);
 		var currentMatrix;
 		if(isLast || matriceList.length == 0){
 			currentMatrix = modelTransform;
@@ -187,11 +266,7 @@ function render() {
 		
 		matIndex++;
 	}
-	
-	//for (var i = 0; i < vertices.length; i = i + seed_poly.length) {
-    //    gl.drawArrays( gl.TRIANGLE_FAN, i, seed_poly.length );
-    //};
-	
+
 	requestAnimFrame( render );
 	
 }

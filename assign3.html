@@ -12,6 +12,8 @@
 		varying vec4 fColor;
 		
 		uniform mat3 modelTransform;
+		
+		uniform mat4 projection;
 	
 		void main () {
 		
@@ -19,7 +21,7 @@
 
 			vec3 homogeneousCoord = vec3(vPosition,1.0);
 			vec3 tfHCoord = modelTransform * homogeneousCoord;
-			gl_Position = vec4(tfHCoord.xy, 0.0, 1.0);
+			gl_Position = projection * vec4(tfHCoord.xy, 0.0, 1.0);
 			
 		}
 	</script>
@@ -48,6 +50,7 @@
 	<script type="text/javascript" src="../Common/MV.js"></script>
 	<script type="text/javascript" src="../Common/webgl-debug.js"></script>
 	<script type="text/javascript" src="assign3.js"></script>
+	<script type="text/javascript" src="dragon.js"></script>
 	
 	<body>
 		<canvas id="gl-canvas" width="512" height="512">
@@ -56,6 +59,8 @@
 		<button id= "drawOriginal">Draw Polygon</button>
 		<button id= "cloneButton">Clone</button>
 		<button id= "vertReset">Reset (Z)</button>
+		<button id= "sprayFractal">Spray Paint</button>
+		<button id= "levelFractal">By Level</button>
 		<p>Golly-Gee Whiz points eligable things: </br>
 		Insert Text Here
 		</p>
