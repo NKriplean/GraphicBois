@@ -26,7 +26,7 @@ var program;
 
 var isLast = false;
 var isFractal = false;
-var numpts = 30;
+var numpts = 10;
 
 var pMatrix;
 var projection;
@@ -151,40 +151,42 @@ window.onload = function init(){
 		var newMat;
 		var cumulative_prob = [];
 
-		//Original: cumulative_prob.push(myIFS.transformations[0].prob);
 		cumulative_prob.push(myIFS.transformations[0].prob);
-		for (var i = 1; i < myIFS.transformations.length; i++){
+		//for (var i = 1; i < myIFS.transformations.length; i++){
+		for(var i = 0; i < matriceList.length; i++){
 			cumulative_prob.push(cumulative_prob[i-1] +   // Make probability cumulative
-					myIFS.transformations[i].prob); 
-
+					(1-cumulative_prob[i-1]));  //TODO: See if this even works???
+			console.log("In first loop");
 			iter = 0;
 			while (iter < numpts){
-			p = Math.random();
-        
-			// Select transformation t
-			t = 0;
-			//Original: while ((p > cumulative_prob[t]) && (t < myIFS.transformations.length - 1)) t++;
-				while ((p > cumulative_prob[t]) && (t < matriceList.length - 1)){ 
-				// Transform point by transformation t 
-				newMat = mult(oldMat,matriceList[t]);
-				//newx = myIFS.transformations[t].rxx*oldx
-				//	+ myIFS.transformations[t].rxy*oldy
-				//	+ myIFS.transformations[t].tx;
-				//newy = myIFS.transformations[t].ryx*oldx
-				//	+ myIFS.transformations[t].ryy*oldy
-				//	+ myIFS.transformations[t].ty;
+				p = Math.random();
+				console.log("In second loop " + iter);
+				// Select transformation t
+				t = 0;
+				//Original: while ((p > cumulative_prob[t]) && (t < myIFS.transformations.length - 1)) t++;
+				while ((p > cumulative_prob[t]) && (t < matriceList.length)){ 
+					console.log("In third loop");
+					// Transform point by transformation t 
+					newMat = mult(oldMat,matriceList[t]);
+					//newx = myIFS.transformations[t].rxx*oldx
+					//	+ myIFS.transformations[t].rxy*oldy
+					//	+ myIFS.transformations[t].tx;
+					//newy = myIFS.transformations[t].ryx*oldx
+					//	+ myIFS.transformations[t].ryy*oldy
+					//	+ myIFS.transformations[t].ty;
 
         
-				// Jump around for awhile without plotting to make sure the
-				// first point seen is attracted into the fractal
-				if (iter > 20) {
-					//vertices.push(vec2(newx, newy));
-					for(var i = 0; i < seed_poly.length; i++)
-					{
-						vertices.push(seed_poly[i]);
+					// Jump around for awhile without plotting to make sure the
+					// first point seen is attracted into the fractal
+					if (iter > 20) {
+						//vertices.push(vec2(newx, newy));
+						for(var i = 0; i < seed_poly.length; i++) //TODO: Is this the correct number of vertices being created
+						{
+							console.log("In fourth loop");
+							vertices.push(seed_poly[i]);
+						}
+						populateColors();
 					}
-					populateColors();
-				}
 				oldMat = newMat;
 				matriceList.push(oldMat);
 				t++;
