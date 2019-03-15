@@ -1,8 +1,9 @@
 /*
 Golly-Gee Whiz points eligable things:
-		   Insert reason here
+		   We generate random colors for each vertice in every polygon. This includes the fractal generated vertices as well.
+		   
 		
-Citations: Add if any
+Citations: None
 
 */
 
@@ -11,7 +12,6 @@ var canvas;
 var seed_poly = [];
 var matriceList = [];
 var matIndex = 0;
-var currentPoly;
 var level = 8;
 
 var mtUniform;
@@ -20,20 +20,12 @@ var colors = [];
 var vertices = [];
 var vPosition;
 var modelTransform;
-var index = 0;
 var bufferID;
 var program;
 
 var isLast = false;
 var isFractal = false;
-var numpts = 10;
-
-var pMatrix;
-var projection;
-var LEFT = -10.0;
-var RIGHT = 10.0;
-var BOTTOM = 0.0;
-var TOP = 10.0;
+var numpts = 300;
 
 
 window.onload = function init(){
@@ -50,10 +42,7 @@ window.onload = function init(){
 	gl.clear( gl.COLOR_BUFFER_BIT );
 		
 	program = initShaders( gl, "vertex-shader", "fragment-shader" ); 
-	gl.useProgram( program );
-	
-	projection = gl.getUniformLocation( program, "projection" );
-	
+	gl.useProgram( program );	
 	
 	canvas.onmousedown =
 	function(event) {
@@ -143,99 +132,121 @@ window.onload = function init(){
 	
 	function generateFractalPoints () {
 		isFractal = true;
+		matriceList.push(modelTransform);
+		var matListLength = matriceList.length;
 		var iter, t, p;
-		//var oldx = 0;
-		//var oldy = 0;
 		var oldMat = mat3();
-		//var newx, newy, p;
 		var newMat;
-		var cumulative_prob = [];
-
-		cumulative_prob.push(myIFS.transformations[0].prob);
-		//for (var i = 1; i < myIFS.transformations.length; i++){
-		for(var i = 0; i < matriceList.length; i++){
-			cumulative_prob.push(cumulative_prob[i-1] +   // Make probability cumulative
-					(1-cumulative_prob[i-1]));  //TODO: See if this even works???
+		
+		iter = 0;
+		while (iter < numpts){
 			console.log("In first loop");
-			iter = 0;
-			while (iter < numpts){
-				p = Math.random();
-				console.log("In second loop " + iter);
-				// Select transformation t
-				t = 0;
-				//Original: while ((p > cumulative_prob[t]) && (t < myIFS.transformations.length - 1)) t++;
-				while ((p > cumulative_prob[t]) && (t < matriceList.length)){ 
-					console.log("In third loop");
-					// Transform point by transformation t 
-					newMat = mult(oldMat,matriceList[t]);
-					//newx = myIFS.transformations[t].rxx*oldx
-					//	+ myIFS.transformations[t].rxy*oldy
-					//	+ myIFS.transformations[t].tx;
-					//newy = myIFS.transformations[t].ryx*oldx
-					//	+ myIFS.transformations[t].ryy*oldy
-					//	+ myIFS.transformations[t].ty;
-
-        
-					// Jump around for awhile without plotting to make sure the
-					// first point seen is attracted into the fractal
-					if (iter > 20) {
-						//vertices.push(vec2(newx, newy));
-						for(var i = 0; i < seed_poly.length; i++) //TODO: Is this the correct number of vertices being created
-						{
-							console.log("In fourth loop");
-							vertices.push(seed_poly[i]);
-						}
-						populateColors();
+			p = Math.random();
+			// Select transformation t
+			t = 0;
+			while ((t < matListLength)){ 
+				console.log("In second loop");
+				// Transform point by transformation t 
+				newMat = mult(oldMat,matriceList[t]);
+				console.log(t);
+				t++;
+				if (iter > 20) {
+					for(var i = 0; i < seed_poly.length; i++) 
+					{
+						console.log("In third loop");
+						vertices.push(seed_poly[i]);
 					}
+					gl.bindBuffer( gl.ARRAY_BUFFER, bufferID );
+					gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );
+					vPosition = gl.getAttribLocation( program, "vPosition" );
+					gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
+					gl.enableVertexAttribArray( vPosition );
+		
+					populateColors();
+		
+					var cBuffer = gl.createBuffer();
+					gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+					gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+	
+					var vColor = gl.getAttribLocation(program, "vColor");
+					gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+					gl.enableVertexAttribArray(vColor);
+				}
 				oldMat = newMat;
 				matriceList.push(oldMat);
-				t++;
+				console.log(oldMat);
 				iter++;
-		
-				}
 			}
-		}
+		}	
 	};
 
 	document.getElementById("levelFractal").onclick = function(){
-			generateFractalPointsByLevel();
+			matriceList.push(modelTransform);
+			console.log("Level Button pressed");
+			generateFractalPointsByLevel(seed_poly,level);
 	};
 	
 	function generateFractalPointsByLevel (seed, level) {
 		isFractal = true;
+		var x;
+		var y;
+		
 		if (level > 0) {
 		var i, j;
 		for (j = 0; j < seed.length; j++) {
 			vertices.push(seed[j]);
 		}
-		for (i = 0; i < myIFS.transformations.length; i++) {
+		for (i = 0; i < matriceList.length; i++) {
 			var next_seed = [];
 			for (j = 0; j < seed.length; j++) {
-			next_seed.push(vec2(myIFS.transformations[i].rxx*seed[j][0]
-						+ myIFS.transformations[i].rxy*seed[j][1]
-						+ myIFS.transformations[i].tx,
-						myIFS.transformations[i].ryx*seed[j][0]
-						+ myIFS.transformations[i].ryy*seed[j][1]
-						+ myIFS.transformations[i].ty));
+				x = seed[j][0];
+				y = seed[j][1];
+				x = (x * matriceList[i][0][0]) + (y * matriceList[i][0][1]) + matriceList[i][0][2];
+				y = (x * matriceList[i][1][0]) + (y * matriceList[i][1][1]) + matriceList[i][1][2];
+				var vecToBeAdded = vec2(x,y);
+				next_seed.push(vecToBeAdded);
 			}
 			generateFractalPointsByLevel(next_seed, level - 1);
-			}
 		}
+	}
+		
+		gl.bindBuffer( gl.ARRAY_BUFFER, bufferID );
+	    gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );
+	    vPosition = gl.getAttribLocation( program, "vPosition" );
+	    gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
+	    gl.enableVertexAttribArray( vPosition );
+		
+		populateColors();
+		
+		var cBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+	
+		var vColor = gl.getAttribLocation(program, "vColor");
+		gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+		gl.enableVertexAttribArray(vColor);
 		
 	};
+	
+	document.getElementById("ifsButton").onclick = function(){
+		matriceList.push(modelTransform);
+		var endMat = mat3();
+		for(var i = 0; i < matriceList.length; i++){
+			endMat = mult(endMat,matriceList[i]);
+		}
+		console.log(endMat[0][0] + " rxx");
+		console.log(endMat[0][1] + " rxy");
+		console.log(endMat[0][2] + " tx");
+		console.log(endMat[1][0] + " ryx");
+		console.log(endMat[1][1] + " ryy");
+		console.log(endMat[1][2] + " ty");
+		
+	}
 	
 };
 
 function render() {
     gl.clear( gl.COLOR_BUFFER_BIT );
-	
-	if(isFractal){
-		pMatrix = ortho(LEFT,RIGHT,BOTTOM,TOP,-1.0,1.0);
-		gl.uniformMatrix4fv( projection, false, flatten(pMatrix) );
-	} else {
-		pMatrix = ortho(-1.0,1.0,-1.0,1.0,-1.0,1.0);
-		gl.uniformMatrix4fv( projection, false, flatten(pMatrix) );
-	}
 	
 	gl.uniform1i(gl.getUniformLocation(program, "smooth_flag"), 1);
 	
@@ -268,7 +279,7 @@ function render() {
 		
 		matIndex++;
 	}
-
+	
 	requestAnimFrame( render );
 	
 }
@@ -374,6 +385,12 @@ window.onkeydown = function(event) {
 	case 90: { //'z' key
 		modelTransform = mat3();
 		break;
+	}
+	case 187: {
+		level++;
+	}
+	case 189: {
+		level--;
 	}
     default: return; // Skip drawing if no effective action
     }
