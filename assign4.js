@@ -9,7 +9,8 @@ var projectionMatrix;		// Projection matrix
 var modelViewMatrixLoc, projectionMatrixLoc;
 var numVertices = 24; //(6 faces)(4 vertices for triangle-fan comprising each fan)
 
-var points = [];		// Coordinates geneated for all cubie faces
+var points = [];		// Coordinates generated for all cubie faces
+
 var colors = [];		// Associated colors
 
 var myCube = new Rubik3x3();	// Rubik cube "object" with operations as documented in
@@ -183,28 +184,67 @@ window.onload = function init(){
 		} 
     };
     document.getElementById( "RButton" ).onclick = function () {
+
+		var result = myCube.performAction("R");
+		console.log(result);
     };
     document.getElementById( "rButton" ).onclick = function () {
+		var result = myCube.performAction("r");
+		console.log(result);
     };
     document.getElementById( "LButton" ).onclick = function () {
+		var result = myCube.performAction("L");
+		console.log(result);
     };
     document.getElementById( "lButton" ).onclick = function () {
+		var result = myCube.performAction("l");
+		console.log(result);
     };
     document.getElementById( "UButton" ).onclick = function () {
+		var result = myCube.performAction("U");
+		console.log(result);
     };
     document.getElementById( "uButton" ).onclick = function () {
+		var result = myCube.performAction("u");
+		console.log(result);
     };
     document.getElementById( "DButton" ).onclick = function () {
+		var result = myCube.performAction("D");
+		console.log(result);
     };
     document.getElementById( "dButton" ).onclick = function () {
+		var result = myCube.performAction("d");
+		console.log(result);
     };
     document.getElementById( "FButton" ).onclick = function () {
+		var sideCoords = [];
+		for(var i = 0; i < 9; i++){
+			sideCoords[i] = myCube.cubie_at_position[i];
+			accum_rotation[sideCoords[i]] = mult(accum_rotation[sideCoords[i]],rotate(-90,vec3(0,0,1)));
+		}
+		var result = myCube.performAction("F");
+		applyTransformation();
+		//var sideCoords = [0,1,2,3,4,5,6,7,8];
+		//var tempCubiePosition;
+		//console.log(result);
+		//for(var i = 0; i < result.length; i++){
+		//	console.log(myCube.cubie_at_position[i]);
+		//	tempCubiePosition = myCube.cubie_at_position[sideCoords[i]];
+		//	myCube.cubie_at_position[sideCoords[i]] = myCube.cubie_at_position[result[i]];
+		//	myCube.cubie_at_position[result[i]] = tempCubiePosition;
+		//}
     };
     document.getElementById( "fButton" ).onclick = function () {
+		var result = myCube.performAction("f");
+		console.log(result);
     };
     document.getElementById( "BButton" ).onclick = function () {
+		var result = myCube.performAction("B");
+		console.log(result);
     };
     document.getElementById( "bButton" ).onclick = function () {
+		var result = myCube.performAction("b");
+		console.log(result);
     };
     document.getElementById( "RandomButton" ).onclick = function () {
     };
@@ -264,3 +304,80 @@ function render() {
     requestAnimFrame( render );
 }
 
+var applyTransformation = function (){
+	var pointCount = 0;
+	var num = 0;
+	for(var i = 0; i < accum_rotation.length; i++)
+	{
+		for(var j = 0; j < 26; j++)
+		{
+			var pointMat = mat4(vec4(points[pointCount],0,0,0),vec4(0,points[pointCount],0,0),vec4(0,0,points[pointCount],0),vec4(0,0,0,1));
+			console.log(num);
+			num++;
+			pointMat = mult(pointMat,accum_rotation[i]);
+			
+			
+			for(var k = 0; k < points[pointCount].length; k++)
+			{
+				points[pointCount][k] = (pointMat[k][0])+
+							            (pointMat[k][1])+
+							            (pointMat[k][2])+
+							            (pointMat[k][3]);
+			} 
+			
+			pointCount++;
+		}
+	}
+	
+	var bufferId = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
+    var vPosition = gl.getAttribLocation( program, "vPosition" );
+    gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray( vPosition ); 
+}
+
+
+	
+window.onkeydown = function(event) {
+    var key = event.keyCode;
+    // For letters, the upper-case version of the letter is always
+    // returned because the shift-key is regarded as a separate key in
+    // itself.  Hence upper- and lower-case can't be distinguished.
+    switch (key) {
+    case 88: {
+		viewerMat = mult(viewerMat, rotate(2.0, vec3(1,0,0)));
+		for(var i = 0; i < viewer.length; i++)
+		{
+			viewer[i] = (viewerMat[i][0])+
+						(viewerMat[i][1])+
+						(viewerMat[i][2])+
+						(viewerMat[i][3]);
+		} 
+		break;
+	}
+	case 89: {
+		viewerMat = mult(viewerMat, rotate(2.0, vec3(0,1,0)));
+		for(var i = 0; i < viewer.length; i++)
+		{
+			viewer[i] = (viewerMat[i][0])+
+						(viewerMat[i][1])+
+						(viewerMat[i][2])+
+						(viewerMat[i][3]);
+		} 
+		break;
+	}
+	case 90: {
+		viewerMat = mult(viewerMat, rotate(2.0, vec3(0,0,1)));
+		for(var i = 0; i < viewer.length; i++)
+		{
+			viewer[i] = (viewerMat[i][0])+
+						(viewerMat[i][1])+
+						(viewerMat[i][2])+
+						(viewerMat[i][3]);
+		} 
+		break;
+	}
+    default: return; // Skip drawing if no effective action
+    }
+};
