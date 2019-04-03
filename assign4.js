@@ -10,6 +10,7 @@ var modelViewMatrixLoc, projectionMatrixLoc;
 var numVertices = 24; //(6 faces)(4 vertices for triangle-fan comprising each fan)
 
 var points = [];		// Coordinates generated for all cubie faces
+
 var colors = [];		// Associated colors
 
 var myCube = new Rubik3x3();	// Rubik cube "object" with operations as documented in
@@ -183,6 +184,7 @@ window.onload = function init(){
 		} 
     };
     document.getElementById( "RButton" ).onclick = function () {
+
 		var result = myCube.performAction("R");
 		console.log(result);
     };
@@ -379,4 +381,3 @@ window.onkeydown = function(event) {
     default: return; // Skip drawing if no effective action
     }
 };
-

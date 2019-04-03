@@ -17,7 +17,9 @@
 // 'f', 'B', 'b' ) representing a face rotation.
 
 //-------------------------------------------------------------------
+
 // myCube.cubie_at_position[i]: an array for which, given position i,
+
 // we know the ID of the cubie at that position.
 
 //-------------------------------------------------------------------

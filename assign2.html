@@ -6,12 +6,20 @@
 	<script id="vertex-shader" type="x-shader/x-vertex">
 		// GLSLvertexshadercode
 		attribute vec4 vPosition;
-		//////// following two gotten from colored, turning pentagon example
+		attribute vec4 gPosition;
+		
 		attribute vec4 vColor;
+		attribute vec4 gColor;
+		
 		varying vec4 fColor;
 		
 		uniform float xCoord;
 		uniform float yCoord;
+		uniform float theta;
+		
+		uniform float tween;
+		uniform float tween2;
+		uniform int mode;
 	
 		void main () {
 		
@@ -79,7 +87,7 @@
 		<button id= "CCButton">Rotate Counter-Clockwise (C)</button>
 		<button id= "CLButton">Rotate Clockwise (L)</button>
 		<button id= "RemoveCurve">Remove Polar Curve (F)</button>
-    <p>Golly-Gee Whiz points eligable things: </br>
+		<p>Golly-Gee Whiz points eligable things: </br>
 		   Color - All vertices have corresponding colors attached to them. </br> 
 		   The smooth_flag was used in uniform1i in Case 0 of render to </br> 
 		   give us smooth shading.</br>
@@ -93,6 +101,6 @@
 		   Press 1 for rotation only, Press 2 for random morphing, Press 3 for animated mirroring</br>
 		   P.S. twisting works for all, and it looks sick.</br>
 		   Our favorite thing to do is F5 -> 'F' -> '2'
-		   </p>
+		</p>
 	</body>
 </html>
