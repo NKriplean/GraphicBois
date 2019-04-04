@@ -12,6 +12,9 @@ var numVertices = 24; //(6 faces)(4 vertices for triangle-fan comprising each fa
 var points = [];		// Coordinates generated for all cubie faces
 var colors = [];		// Associated colors
 
+var rotationAngle = 90;
+var accumCount = 0;
+
 var myCube = new Rubik3x3();	// Rubik cube "object" with operations as documented in
 // rubik-helper.js
 
@@ -184,63 +187,86 @@ window.onload = function init(){
     };
     document.getElementById( "RButton" ).onclick = function () {
 		var result = myCube.performAction("R");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(1,0,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "rButton" ).onclick = function () {
 		var result = myCube.performAction("r");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(1,0,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "LButton" ).onclick = function () {
 		var result = myCube.performAction("L");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(1,0,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "lButton" ).onclick = function () {
 		var result = myCube.performAction("l");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(1,0,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "UButton" ).onclick = function () {
 		var result = myCube.performAction("U");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(0,1,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "uButton" ).onclick = function () {
 		var result = myCube.performAction("u");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,1,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "DButton" ).onclick = function () {
 		var result = myCube.performAction("D");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(0,1,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "dButton" ).onclick = function () {
 		var result = myCube.performAction("d");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,1,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "FButton" ).onclick = function () {
-		for(var i = 0; i < 9; i++){
-			//console.log(myCube.cubie_at_position[i]);
-			accum_rotation[myCube.cubie_at_position[i]] = mult(rotate(90,vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[i]]);
-		}
 		var result = myCube.performAction("F");
-		//console.log(result);
-		//for(var i = 0; i < result.length; i++){
-		//	console.log(myCube.cubie_at_position[i]);
-		//}
-		applyTransformation();
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "fButton" ).onclick = function () {
 		var result = myCube.performAction("f");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "BButton" ).onclick = function () {
 		var result = myCube.performAction("B");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "bButton" ).onclick = function () {
 		var result = myCube.performAction("b");
-		console.log(result);
+		for (i = 0; i < result.length; i++) {
+			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		}
     };
     document.getElementById( "RandomButton" ).onclick = function () {
+		var randomAction = getRandomInt(12);
+		var options = ["R","r","L","l","U","u","D","d","F","f","B","b"]
+		var result = performAction(options[randomAction]);
+		//for (i = 0; i < result.length; i++) {
+		//	accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
+		//}
     };
     document.getElementById( "ScrambleButton" ).onclick = function () {
+		
     };
     render();
 };
@@ -276,13 +302,16 @@ function render() {
     projectionMatrix = perspective(45.0, canvas.width / canvas.height, 2.0, 20.0); 
     gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
     modelViewMatrix = lookAt(vec3(viewer[0],viewer[1],viewer[2]), vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0));
+	accumCount = 0;
     
     for (var i = 0; i < points.length; i = i + numVertices) {
 	g_matrixStack.push(modelViewMatrix);
+	modelViewMatrix = mult(modelViewMatrix, accum_rotation[accumCount]);
  	modelViewMatrix = mult(modelViewMatrix,
 			       translate(trans[i/numVertices][0],
 					 trans[i/numVertices][1],
 					 trans[i/numVertices][2]));
+	accumCount++;
 	gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
 	for (var j = i; j < i + numVertices; j = j + 4) {
 	    gl.uniform1i(gl.getUniformLocation(program, "outline_mode"), 0);
@@ -294,6 +323,10 @@ function render() {
     };
 
     requestAnimFrame( render );
+}
+
+var getRandomInt = function (max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }
 
 var applyTransformation = function (){
