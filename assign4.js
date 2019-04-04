@@ -10,7 +10,6 @@ var modelViewMatrixLoc, projectionMatrixLoc;
 var numVertices = 24; //(6 faces)(4 vertices for triangle-fan comprising each fan)
 
 var points = [];		// Coordinates generated for all cubie faces
-
 var colors = [];		// Associated colors
 
 var myCube = new Rubik3x3();	// Rubik cube "object" with operations as documented in
@@ -184,7 +183,6 @@ window.onload = function init(){
 		} 
     };
     document.getElementById( "RButton" ).onclick = function () {
-
 		var result = myCube.performAction("R");
 		console.log(result);
     };
@@ -217,22 +215,16 @@ window.onload = function init(){
 		console.log(result);
     };
     document.getElementById( "FButton" ).onclick = function () {
-		var sideCoords = [];
 		for(var i = 0; i < 9; i++){
-			sideCoords[i] = myCube.cubie_at_position[i];
-			accum_rotation[sideCoords[i]] = mult(accum_rotation[sideCoords[i]],rotate(-90,vec3(0,0,1)));
+			//console.log(myCube.cubie_at_position[i]);
+			accum_rotation[myCube.cubie_at_position[i]] = mult(rotate(90,vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[i]]);
 		}
 		var result = myCube.performAction("F");
-		applyTransformation();
-		//var sideCoords = [0,1,2,3,4,5,6,7,8];
-		//var tempCubiePosition;
 		//console.log(result);
 		//for(var i = 0; i < result.length; i++){
 		//	console.log(myCube.cubie_at_position[i]);
-		//	tempCubiePosition = myCube.cubie_at_position[sideCoords[i]];
-		//	myCube.cubie_at_position[sideCoords[i]] = myCube.cubie_at_position[result[i]];
-		//	myCube.cubie_at_position[result[i]] = tempCubiePosition;
 		//}
+		applyTransformation();
     };
     document.getElementById( "fButton" ).onclick = function () {
 		var result = myCube.performAction("f");
@@ -306,24 +298,41 @@ function render() {
 
 var applyTransformation = function (){
 	var pointCount = 0;
-	var num = 0;
+	console.log(accum_rotation);
+	console.log(points.length);
 	for(var i = 0; i < accum_rotation.length; i++)
 	{
-		for(var j = 0; j < 26; j++)
+		for(var j = 0; j < numVertices; j++)
 		{
-			var pointMat = mat4(vec4(points[pointCount],0,0,0),vec4(0,points[pointCount],0,0),vec4(0,0,points[pointCount],0),vec4(0,0,0,1));
-			console.log(num);
-			num++;
-			pointMat = mult(pointMat,accum_rotation[i]);
+			var pointMat = mat4(vec4(points[pointCount][0],0,0,0),vec4(0,points[pointCount][1],0,0),vec4(0,0,points[pointCount][2],0),vec4(0,0,0,1));
+			pointMat = mult(accum_rotation[i], pointMat);
 			
 			
-			for(var k = 0; k < points[pointCount].length; k++)
-			{
-				points[pointCount][k] = (pointMat[k][0])+
-							            (pointMat[k][1])+
-							            (pointMat[k][2])+
-							            (pointMat[k][3]);
-			} 
+			
+			//if(pointCount > 600){
+			//	console.log(points[pointCount]);
+			//}
+			
+			
+			
+			points[pointCount][0] = (pointMat[0][0])+
+							     (pointMat[0][1])+
+							     (pointMat[0][2])+
+							     (pointMat[0][3]);
+			
+			points[pointCount][1] = (pointMat[1][0])+
+							     (pointMat[1][1])+
+							     (pointMat[1][2])+
+							     (pointMat[1][3]);
+								 
+			points[pointCount][2] = (pointMat[2][0])+
+							     (pointMat[2][1])+
+							     (pointMat[2][2])+
+							     (pointMat[2][3]);
+								 
+			//if(pointCount > 600){
+			//	console.log(points[pointCount]);
+			//}
 			
 			pointCount++;
 		}
@@ -378,6 +387,11 @@ window.onkeydown = function(event) {
 		} 
 		break;
 	}
+	case 87: {
+		applyTransformation();
+		break;
+	}
     default: return; // Skip drawing if no effective action
     }
 };
+
