@@ -1,4 +1,9 @@
 // assign4.js: Starter code for Assignment 4
+/*
+Camera controls allow for cube rotation to view all sides
+All of the buttons make the correct transformations to the correct faces
+The animation of these transformations do not occur correctly, it instead is affecting all cubies
+*/
 var gl;
 var canvas;
 var program;
@@ -20,11 +25,14 @@ var yAxis = 1;
 var zAxis = 2;
 
 var axis;
+var rotateAxis;
 var xRotate = vec3(1,0,0);
 var yRotate = vec3(0,1,0);
 var zRotate = vec3(0,0,1);
-var tempAngle = 0;
+var angleCheck = 0;
+var tempAngle = 2;
 var polarity = 1;
+var buttonPressed = false;
 
 var myCube = new Rubik3x3();	// Rubik cube "object" with operations as documented in
 // rubik-helper.js
@@ -93,7 +101,14 @@ var accum_rotation = [
     mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(),
     mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(),
     mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(),
-    mat4(), mat4(),
+    mat4(), mat4()
+];
+
+var tempMat = [
+    mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(),
+    mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(),
+    mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(), mat4(),
+    mat4(), mat4()
 ];
 
 var viewer = [7.0, 3.0, 7.0]; // initial viewer location 
@@ -168,121 +183,199 @@ window.onload = function init(){
     document.getElementById( "ResetButton" ).onclick = function () {
 		theta = [0,0,0];
     };
-    document.getElementById( "RButton" ).onclick = function () {
+	
+	var R = function (){
 		var result = myCube.performAction("R");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(1,0,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 0;
 		polarity = -1;
-    };
-    document.getElementById( "rButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var r = function(){
 		var result = myCube.performAction("r");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(1,0,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 0;
 		polarity = 1;
-		tempAngle = 0;
-    };
-    document.getElementById( "LButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var L = function(){
 		var result = myCube.performAction("L");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(1,0,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 0;
 		polarity = 1;
-		tempAngle = 0;
-    };
-    document.getElementById( "lButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var l = function(){
 		var result = myCube.performAction("l");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(1,0,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 0;
 		polarity = -1;
-		tempAngle = 0;
-    };
-    document.getElementById( "UButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var U = function(){
 		var result = myCube.performAction("U");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(0,1,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 1;
 		polarity = -1;
-		tempAngle = 0;
-    };
-    document.getElementById( "uButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var u = function(){
 		var result = myCube.performAction("u");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,1,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 1;
 		polarity = 1;
-		tempAngle = 0;
-    };
-    document.getElementById( "DButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var D = function(){
 		var result = myCube.performAction("D");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,1,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 1;
 		polarity = 1;
-		tempAngle = 0;
-    };
-    document.getElementById( "dButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var d = function(){
 		var result = myCube.performAction("d");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(0,1,0)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 1;
 		polarity = -1;
-		tempAngle = 0;
-    };
-    document.getElementById( "FButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var F = function(){
 		var result = myCube.performAction("F");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 2;
 		polarity = -1;
-		tempAngle = 0;
-    };
-    document.getElementById( "fButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var f = function(){
 		var result = myCube.performAction("f");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 2;
 		polarity = 1;
-		tempAngle = 0;
-    };
-    document.getElementById( "BButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var B = function(){
 		var result = myCube.performAction("B");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 2;
 		polarity = 1;
-		tempAngle = 0;
-    };
-    document.getElementById( "bButton" ).onclick = function () {
+		buttonPressed = true;
+	};
+	
+	var b = function(){
 		var result = myCube.performAction("b");
 		for (i = 0; i < result.length; i++) {
 			accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(-rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
 		}
 		axis = 2;
 		polarity = -1;
-		tempAngle = 0;
+		buttonPressed = true;
+	};
+	
+	var randomButtonPress = function () {
+		var action = myCube.getRandomAction();
+		switch (action){
+			case "R": {
+				R();
+				break;
+			}
+			case "r": {
+				r();
+				break;
+			}
+			case "L": {
+				L();
+				break;
+			}
+			case "l": {
+				l();
+				break;
+			}
+			case "U": {
+				U();
+				break;
+			}
+			case "u": {
+				u();
+				break;
+			}
+			case "D": {
+				D();
+				break;
+			}
+			case "d": {
+				d();
+				break;
+			}
+			case "F": {
+				F();
+				break;
+			}
+			case "f": {
+				f();
+				break;
+			}
+			case "B": {
+				B();
+				break;
+			}
+			case "b": {
+				b();
+				break;
+			}
+		}
+		buttonPressed = false;
     };
-    document.getElementById( "RandomButton" ).onclick = function () {
-		var result = performRandomAction();
-		//for (i = 0; i < result.length; i++) {
-		//	accum_rotation[myCube.cubie_at_position[result[i]]] = mult(rotate(rotationAngle, vec3(0,0,1)),accum_rotation[myCube.cubie_at_position[result[i]]]);
-		//}
-    };
+	
+    document.getElementById( "RButton" ).onclick = R;
+    document.getElementById( "rButton" ).onclick = r;
+	document.getElementById( "LButton" ).onclick = L;
+    document.getElementById( "lButton" ).onclick = l;
+    document.getElementById( "UButton" ).onclick = U;
+    document.getElementById( "uButton" ).onclick = u;
+    document.getElementById( "DButton" ).onclick = D;
+    document.getElementById( "dButton" ).onclick = d;
+    document.getElementById( "FButton" ).onclick = F;
+    document.getElementById( "fButton" ).onclick = f;
+    document.getElementById( "BButton" ).onclick = B;
+    document.getElementById( "bButton" ).onclick = b;
+    document.getElementById( "RandomButton" ).onclick = randomButtonPress;
     document.getElementById( "ScrambleButton" ).onclick = function () {
-		
+		for(var i = 0; i < 100; i++){
+			randomButtonPress();
+		}
     };
     render();
 };
@@ -328,7 +421,31 @@ function render() {
     for (var i = 0; i < points.length; i = i + numVertices) {
 	g_matrixStack.push(modelViewMatrix);
 	
-	modelViewMatrix = mult(modelViewMatrix, accum_rotation[accumCount]);
+	if(buttonPressed){
+		if(axis == 0){
+			rotateAxis = xRotate;
+		} else if(axis == 1){
+			rotateAxis = yRotate;
+		} else {
+			rotateAxis = zRotate;
+		}
+	
+		if(tempMat[accumCount] != accum_rotation[accumCount])
+		{
+			tempMat[accumCount] = mult(tempMat[accumCount], rotate((tempAngle*polarity),rotateAxis));
+		}
+		if(angleCheck === rotationAngle){
+			buttonPressed = false;
+			angleCheck = 0;
+			modelViewMatrix = mult(modelViewMatrix, accum_rotation[accumCount]);
+		} else {
+			angleCheck += tempAngle;
+			modelViewMatrix = mult(modelViewMatrix, tempMat[accumCount]);
+		}
+	} else {
+		modelViewMatrix = mult(modelViewMatrix, accum_rotation[accumCount]);
+	}
+	
  	modelViewMatrix = mult(modelViewMatrix,
 			       translate(trans[i/numVertices][0],
 					 trans[i/numVertices][1],
