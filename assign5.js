@@ -18,6 +18,7 @@ var texture;             // A texture object that will be
 
 var displayType = 0;	 // Uniform to decide display type
 var displayTypeLoc;
+var multiplierLoc;
 var fColor;              // A uniform variable used to pass a color vector to shader
 
 const black = vec4(0.0, 0.0, 0.0, 1.0);
@@ -36,6 +37,7 @@ var left = -1.0;
 var right = 1.0;
 var ytop = 1.0;
 var bottom = -1.0;
+var multiplier = 10.0;
 ////////   End viewing parameters /////////////
 
 // Uniforms for the Angel/Shreiner viewing and projection utilities
@@ -135,6 +137,7 @@ window.onload = function init()
     // Get locations of uniforms
     fColor = gl.getUniformLocation(program, "fColor");
     displayTypeLoc = gl.getUniformLocation(program, "displayType"); 
+	multiplierLoc = gl.getUniformLocation(program, "multiplier");
     modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
     projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
 
@@ -163,6 +166,8 @@ window.onload = function init()
     document.getElementById("Button10").onclick = function(){left *= 1.1; right *= 1.1;};
     document.getElementById("Button11").onclick = function(){ytop  *= 0.9; bottom *= 0.9;};
     document.getElementById("Button12").onclick = function(){ytop *= 1.1; bottom *= 1.1;};
+	document.getElementById("Button13").onclick = function(){multiplier = multiplier * 10.0;};
+	document.getElementById("Button14").onclick = function(){multiplier = multiplier * 10.0;};
     document.getElementById("displayTypeMenu").addEventListener("click",
              function (event) {
                displayType = document.getElementById("displayTypeMenu").selectedIndex;
@@ -185,6 +190,7 @@ function render()
     gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(modelViewMatrix) );
     gl.uniformMatrix4fv( projectionMatrixLoc, false, flatten(projectionMatrix) );
     gl.uniform1i(displayTypeLoc, displayType);
+	gl.uniform1f(multiplierLoc, multiplier);
     
     // In initial display draw each quad as two filled red triangles
     // and then as black line loop
