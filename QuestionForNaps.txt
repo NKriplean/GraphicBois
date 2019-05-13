@@ -1,0 +1,5 @@
+Questions:
+	1.) Why can we see objects that are behind other objects? (Discuss more on Wednesday)
+	2.) Villain turn not working? We disabled rotation that was in place by default. (Solved)
+	3.) Easier option for how we setup our moving options?
+	4.) Run by our idea on collision detection (i.e. Flags for type of bonk) (Solved)
